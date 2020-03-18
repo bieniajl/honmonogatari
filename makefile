@@ -7,7 +7,7 @@ CFLAGS      :=
 CPP         := g++
 CPPFLAGS    := -std=c++17 -g -Og -MMD -MP -Wall
 LD          := g++
-LDFLAGS     :=
+LDFLAGS     := -export-dynamic
 
 TARGET      := honmono
 LIB         :=
