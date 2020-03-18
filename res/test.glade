@@ -33,6 +33,21 @@
             <property name="label" translatable="yes">count</property>
           </object>
         </child>
+        <child>
+          <object class="GtkButton" id="btn_hello">
+            <property name="label" translatable="yes">button</property>
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="on_btn_hello_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">179</property>
+            <property name="y">202</property>
+          </packing>
+        </child>
       </object>
     </child>
   </object>
