@@ -3,15 +3,13 @@
 #
 
 CC          := gcc
-CFLAGS      :=
+CFLAGS      := `pkg-config --cflags gtk+-3.0`
 CPP         := g++
-CPPFLAGS    := -std=c++17 -g -Og -MMD -MP -Wall
+CPPFLAGS    := -std=c++17 -g -Og -MMD -MP -Wall `pkg-config --cflags gtk+-3.0`
 LD          := g++
-LDFLAGS     := -export-dynamic
+LDFLAGS     := `pkg-config --libs gtk+-3.0` -export-dynamic
 
 TARGET      := honmono
-LIB         :=
-PKGFLAGS    := `pkg-config --cflags --libs gtk+-3.0`
 
 CEXT        := c
 CPPEXT      := cpp
@@ -31,16 +29,16 @@ CPPOBJECTS  := $(patsubst $(SRCDIR)/%,$(OUTDIR)/%,$(CPPSOURCES:.$(CPPEXT)=.$(OUT
 
 all: $(BINDIR)/$(TARGET)
 
-$(BINDIR)/$(TARGET): $(CPPOBJECTS)
-	$(LD) $(LDFLAGS) $(PKGFLAGS) $^ $(LIB) -o $@
+$(BINDIR)/$(TARGET): $(CPPOBJECTS) $(COBJECTS)
+	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OUTDIR)/%.$(OUTEXT): $(SRCDIR)/%.$(CEXT)
 	@dirname $@ | xargs mkdir -p
-	$(CC) $(CFLAGS) $(PKGFLAGS) -I ./$(SRCDIR) -I ./$(INCDIR) -c $< -o $@
+	$(CC) $(CFLAGS) -I ./$(SRCDIR) -I ./$(INCDIR) -c $< -o $@
 
 $(OUTDIR)/%.$(OUTEXT): $(SRCDIR)/%.$(CPPEXT)
 	@dirname $@ | xargs mkdir -p
-	$(CPP) $(CPPFLAGS) $(PKGFLAGS) -I ./$(SRCDIR) -I ./$(INCDIR) -c $< -o $@
+	$(CPP) $(CPPFLAGS) -I ./$(SRCDIR) -I ./$(INCDIR) -c $< -o $@
 
 clean:
 	rm -rf $(OUTDIR)/* $(BINDIR)/$(TARGET)
