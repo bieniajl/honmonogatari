@@ -37,7 +37,7 @@ bool Display::isClosed()
 	return m_isClosed;
 }
 
-void Display::Clear(float red, float green, float blue, float alpha)
+void Display::clear(float red, float green, float blue, float alpha)
 {
 	glClearColor(red, green, blue, alpha);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -45,16 +45,16 @@ void Display::Clear(float red, float green, float blue, float alpha)
 
 void Display::update()
 {
-	SwapBuffers();
-	PollEvents();
+	swapBuffers();
+	pollEvents();
 }
 
-void Display::SwapBuffers()
+void Display::swapBuffers()
 {
 	SDL_GL_SwapWindow(m_Window);
 }
 
-void Display::PollEvents()
+void Display::pollEvents()
 {
 	SDL_Event e;
 

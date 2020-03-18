@@ -11,7 +11,7 @@ class Display
 public:
 	Display(int width, int height, const std::string &title);
 
-	void Clear(float red, float green, float blue, float alpha);
+	void clear(float red, float green, float blue, float alpha);
 	void update();
 	bool isClosed();
 
@@ -23,8 +23,8 @@ private:
 
 	bool m_isClosed;
 
-	void SwapBuffers();
-	void PollEvents();
+	void swapBuffers();
+	void pollEvents();
 };
 
 #endif // DISPLAY_H
