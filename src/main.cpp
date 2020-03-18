@@ -43,6 +43,8 @@ int main(int argc, char *argv[])
 
     g_object_unref(builder);
 
+    g_signal_connect(window, "destroy", G_CALLBACK(on_window_main_destroy), NULL);
+
     gtk_widget_show(window);
     gtk_main();
 
