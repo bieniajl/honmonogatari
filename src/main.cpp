@@ -8,11 +8,12 @@ int main()
 {
 	Display display(1280, 720, "Test Window");
 
-	display.Clear(1.0f, 0.0f, 0.0f, 0.0f);
+	while(!display.isClosed())
+	{
+		display.Clear(1.0f, 0.0f, 0.0f, 1.0f);
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+		display.update();
+	}
 
 	return 0;
-
-	std::cout << "Hello World!" << std::endl;
 }

@@ -43,9 +43,51 @@ void Display::Clear(float red, float green, float blue, float alpha)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Display::update()
+{
+	SwapBuffers();
+	PollEvents();
+}
+
 void Display::SwapBuffers()
 {
 	SDL_GL_SwapWindow(m_Window);
+}
+
+void Display::PollEvents()
+{
+	SDL_Event e;
+
+	while(SDL_PollEvent(&e))
+	{
+		switch( e.type )
+		{
+			case SDL_KEYUP:
+				break;
+
+			case SDL_KEYDOWN:
+				//switch( e.key.keysym.sym )
+				// case SDLK_W:
+				break;
+
+			case SDL_MOUSEMOTION:
+				//e.motion.yrel
+				//e.motion.xrel
+				break;
+
+			case SDL_WINDOWEVENT:
+				//switch (e.window.event)
+				//{
+				//	case SDL_WINDOWEVENT_RESIZED:
+				//		break;
+				//}
+				break;
+
+			case SDL_QUIT:
+				m_isClosed = true;
+				break;
+		}
+	}
 }
 
 Display::~Display()

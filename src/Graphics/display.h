@@ -12,6 +12,7 @@ public:
 	Display(int width, int height, const std::string &title);
 
 	void Clear(float red, float green, float blue, float alpha);
+	void update();
 	bool isClosed();
 
 	virtual ~Display();
@@ -23,6 +24,7 @@ private:
 	bool m_isClosed;
 
 	void SwapBuffers();
+	void PollEvents();
 };
 
 #endif // DISPLAY_H
