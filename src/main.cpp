@@ -44,3 +44,4 @@ void on_btn_hello_clicked()
 void on_window_main_destroy()
 {
     gtk_main_quit();
+}
