@@ -1,0 +1,6 @@
+# Build configuration
+config.mk
+
+# Build files
+bin/*
+out/*

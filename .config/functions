@@ -1,0 +1,7 @@
+SOURCES    := $(shell find -L $(SRCDIR) -type f -name *.$(CPPEXT) ! -name $(MAINFILE))
+OBJECTS    := $(patsubst $(SRCDIR)/%,$(OUTDIR)/$(BLDDIR)/%,$(SOURCES:.$(CPPEXT)=.$(OBJEXT))) $(OUTDIR)/$(BLDDIR)/$(MAINFILE:.$(CPPEXT)=.$(OBJEXT))
+
+VERSION_HASH  := $(shell git rev-parse HEAD 2> /dev/null || echo "0000000000000000000000000000000000000000")
+VERSION_STATE := $(shell bash -c '[[ -z "$(shell git status -s)" ]] && echo "" || echo " [dirty]"')
+VERSION_TRIM  := $(VERSION_STAGE) $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)-$(shell echo $(VERSION_HASH) | head -c 7)$(VERSION_STATE)
+VERSION_FULL  := $(VERSION_STAGE) $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)-$(VERSION_HASH)$(VERSION_STATE)
