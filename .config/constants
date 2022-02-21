@@ -13,3 +13,6 @@ BINDIR     := bin
 LIBDIR     := lib
 RESDIR     := res
 DOCDIR     := doc
+
+LIBIMGUI   := imgui
+BACKENDDIR := backends

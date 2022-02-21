@@ -40,21 +40,29 @@ printversion:
 # -----------------------------------------------------------------------------
 
 # LINKING TARGET
-$(BINDIR)/$(TARGET): $(OBJECTS) $(BUILDCONFIGURATION)
+$(BINDIR)/$(TARGET): $(OBJECTS) $(IMGUIOBJECTS) $(BACKENDOBJECTS) $(BUILDCONFIGURATION)
 	@dirname $@ | xargs mkdir -p
-	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
+	$(LD) $(LDFLAGS) $(OBJECTS) $(IMGUIOBJECTS) $(BACKENDOBJECTS) -o $@
 
 # COMPILING TARGET
 $(OUTDIR)/$(BLDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(CPPEXT) $(BUILDCONFIGURATION)
 	@dirname $@ | xargs mkdir -p
-	$(CPP) $(CPPFLAGS) -iquote ./$(SRCDIR) -I ./$(LIBDIR) -c $< -o $@
+	$(CPP) $(CPPFLAGS) $(COMPILERINCLUDES) -c $< -o $@
+
+# IMGUI COMPILING TARGETS
+$(OUTDIR)/$(LIBIMGUI)/%.$(OBJEXT): $(LIBDIR)/$(LIBIMGUI)/%.$(CPPEXT) $(BUILDCONFIGURATION)
+	@dirname $@ | xargs mkdir -p
+	$(CPP) $(IMGUIFLAGS) -iquote $(LIBDIR)/$(LIBIMGUI) -c $< -o $@
+$(OUTDIR)/$(LIBIMGUI)/%.$(OBJEXT): $(LIBDIR)/$(LIBIMGUI)/$(BACKENDDIR)/%.$(CPPEXT) $(BUILDCONFIGURATION)
+	@dirname $@ | xargs mkdir -p
+	$(CPP) $(IMGUIFLAGS) -iquote $(LIBDIR)/$(LIBIMGUI) -iquote $(LIBDIR)/$(LIBIMGUI)/$(BACKENDDIR) -c $< -o $@
 
 # -----------------------------------------------------------------------------
 
 # DOCUMENTATION TARGET
 .PHONY: doc
 doc: $(DOCDIR)/$(DOXYFILE)
-	doxygen $(DOCDIR)/$(DOXYFILE)
+	VERSION_TRIM="$(VERSION_TRIM)" doxygen $(DOCDIR)/$(DOXYFILE)
 
 # -----------------------------------------------------------------------------
 
@@ -68,10 +76,12 @@ clean:
 .PHONY: reset
 .NOTPARALLEL: reset
 reset: clean
-	rm -rf $(BUILDCONFIGURATION) $(DOCDIR)/html $(DOCDIR)/latex
+	rm -rf $(BUILDCONFIGURATION) $(DOCDIR)/html $(DOCDIR)/latex $(DOCDIR)/man
 
 # -----------------------------------------------------------------------------
 
 # HEADER DEPENDENCY INCLUDES
 -include $(OUTDIR)/$(BLDDIR)/$(MAINFILE:%.$(CPPEXT)=%.$(MAKEXT))
 -include $(OBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
+-include $(IMGUIOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
+-include $(BACKENDOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))

@@ -20,6 +20,11 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+imgui_flags=$(dialog --keep-tite --inputbox "C++ Compiler Flags for imgui" 0 $DIALOGWIDTH "-std=c++20 -O3 -MMD -MP" 2>&1 1>/dev/tty)
+if [ $? != 0 ]; then
+	exit 1
+fi
+
 linker=$(dialog --keep-tite --inputbox "Linker" 0 $DIALOGWIDTH "g++" 2>&1 1>/dev/tty)
 if [ $? != 0 ]; then
 	exit 1
@@ -32,10 +37,11 @@ fi
 
 echo "# Custom Build Configuration" > $BUILDCONFIG
 echo "" >> $BUILDCONFIG
-echo "TARGET   := $target" >> $BUILDCONFIG
-echo "BLDDIR   := $folder" >> $BUILDCONFIG
+echo "TARGET     := $target" >> $BUILDCONFIG
+echo "BLDDIR     := $folder" >> $BUILDCONFIG
 echo "" >> $BUILDCONFIG
-echo "CPP      := $compiler" >> $BUILDCONFIG
-echo "CPPFLAGS := $compiler_flags" >> $BUILDCONFIG
-echo "LD       := $linker" >> $BUILDCONFIG
-echo "LDFLAGS  := $linker_flags" >> $BUILDCONFIG
+echo "CPP        := $compiler" >> $BUILDCONFIG
+echo "CPPFLAGS   := $compiler_flags" >> $BUILDCONFIG
+echo "IMGUIFLAGS := $imgui_flags" >> $BUILDCONFIG
+echo "LD         := $linker" >> $BUILDCONFIG
+echo "LDFLAGS    := $linker_flags" >> $BUILDCONFIG
