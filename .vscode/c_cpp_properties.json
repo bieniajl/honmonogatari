@@ -2,7 +2,10 @@
     "configurations": [
         {
             "name": "Linux",
-            "includePath": [],
+            "includePath": [
+                "${workspaceFolder}/lib/imgui",
+                "${workspaceFolder}/lib/imgui/backends"
+            ],
             "defines": [
                 "Debug"
             ],
