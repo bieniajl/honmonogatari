@@ -2,3 +2,7 @@
 	path = lib/imgui
 	url = git@github.com:ocornut/imgui.git
 	branch = docking
+[submodule "lib/ImGuiColorTextEdit"]
+	path = lib/ImGuiColorTextEdit
+	url = git@github.com:BalazsJako/ImGuiColorTextEdit.git
+	branch = master
