@@ -5,5 +5,10 @@ config.mk
 bin/*
 out/*
 
+# Documentation
+doc/html/*
+doc/latex/*
+doc/man/*
+
 .vsls.json
 imgui.ini
