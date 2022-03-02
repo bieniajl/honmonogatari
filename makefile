@@ -40,9 +40,9 @@ printversion:
 # -----------------------------------------------------------------------------
 
 # LINKING TARGET
-$(BINDIR)/$(TARGET): $(OBJECTS) $(IMGUIOBJECTS) $(BACKENDOBJECTS) $(BUILDCONFIGURATION)
+$(BINDIR)/$(TARGET): $(LINKINGOBJECTS) $(BUILDCONFIGURATION)
 	@dirname $@ | xargs mkdir -p
-	$(LD) $(LDFLAGS) $(OBJECTS) $(IMGUIOBJECTS) $(BACKENDOBJECTS) -o $@
+	$(LD) $(LDFLAGS) $(LINKINGOBJECTS) -o $@
 
 # COMPILING TARGET
 $(OUTDIR)/$(BLDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(CPPEXT) $(BUILDCONFIGURATION)
@@ -53,9 +53,15 @@ $(OUTDIR)/$(BLDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(CPPEXT) $(BUILDCONFIGURATION)
 $(OUTDIR)/$(LIBIMGUI)/%.$(OBJEXT): $(LIBDIR)/$(LIBIMGUI)/%.$(CPPEXT) $(BUILDCONFIGURATION)
 	@dirname $@ | xargs mkdir -p
 	$(CPP) $(IMGUIFLAGS) -iquote $(LIBDIR)/$(LIBIMGUI) -c $< -o $@
+# IMGUI BACKEND COMPILING TARGETS
 $(OUTDIR)/$(LIBIMGUI)/%.$(OBJEXT): $(LIBDIR)/$(LIBIMGUI)/$(BACKENDDIR)/%.$(CPPEXT) $(BUILDCONFIGURATION)
 	@dirname $@ | xargs mkdir -p
-	$(CPP) $(IMGUIFLAGS) -iquote $(LIBDIR)/$(LIBIMGUI) -iquote $(LIBDIR)/$(LIBIMGUI)/$(BACKENDDIR) -c $< -o $@
+	$(CPP) $(IMGUIFLAGS) -iquote $(LIBDIR)/$(LIBIMGUI) -c $< -o $@
+# TEXTEDIT COMPILING TARGETS
+$(OUTDIR)/$(LIBTEXTEDIT)/%.$(OBJEXT): $(LIBDIR)/$(LIBTEXTEDIT)/%.$(CPPEXT) $(BUILDCONFIGURATION)
+	@dirname $@ | xargs mkdir -p
+	$(CPP) $(IMGUIFLAGS) -iquote $(LIBDIR)/$(LIBIMGUI) -c $< -o $@
+
 
 # -----------------------------------------------------------------------------
 
@@ -85,3 +91,4 @@ reset: clean
 -include $(OBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
 -include $(IMGUIOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
 -include $(BACKENDOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
+-include $(TEXTEDITOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))

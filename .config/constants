@@ -1,18 +1,19 @@
 BUILDCONFIGURATION := config.mk
 
-MAINFILE   := main.cpp
-DOXYFILE   := doxygen.conf
+MAINFILE    := main.cpp
+DOXYFILE    := doxygen.conf
 
-CPPEXT     := cpp
-OBJEXT     := o
-MAKEXT     := d
+CPPEXT      := cpp
+OBJEXT      := o
+MAKEXT      := d
 
-SRCDIR     := src
-OUTDIR     := out
-BINDIR     := bin
-LIBDIR     := lib
-RESDIR     := res
-DOCDIR     := doc
+SRCDIR      := src
+OUTDIR      := out
+BINDIR      := bin
+LIBDIR      := lib
+RESDIR      := res
+DOCDIR      := doc
 
-LIBIMGUI   := imgui
-BACKENDDIR := backends
+LIBIMGUI    := imgui
+LIBTEXTEDIT := ImGuiColorTextEdit
+BACKENDDIR  := backends
