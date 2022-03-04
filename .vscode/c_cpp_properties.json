@@ -8,7 +8,10 @@
                 "${workspaceFolder}/lib/ImGuiColorTextEdit"
             ],
             "defines": [
-                "DEBUG"
+                "DEBUG",
+                "VERSION_SHORT=\"\"",
+                "VERSION_TRIM=\"\"",
+                "VERSION_FULL=\"\""
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
