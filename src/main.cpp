@@ -13,7 +13,12 @@
 #include <stdexcept>
 
 #include "imgui.h"
+#include "TextEditor.h"
 #include "graphics_backend.h"
+
+#ifdef DEBUG
+	#define SHOW_FPS_COUNTER
+#endif
 
 /**
  * @brief Main entry point of the programm.
@@ -40,7 +45,6 @@ int main(int, char**)
 		}
 	);
 	graphics_backend::VulkanInstance vulkan(window);
-	vulkan.setClearColor(0.188f, 0.25f, 0.25f);
 
 	{ // Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
@@ -64,21 +68,30 @@ int main(int, char**)
 		ImGui::StyleColorsDark(); //or ImGui::StyleColorsClassic();
 	}
 
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform
-	// windows can look identical to regular ones.
-	ImGuiStyle& style = ImGui::GetStyle();
-	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
+		ImGuiStyle& style = ImGui::GetStyle();
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.188f, 0.25f, 0.25f, 1.0f);
 	}
 
 	// Initialize the vulkan rendering
 	vulkan.init(window);
 
+	// Dear ImGui Window Flags
+#ifdef DEBUG
+	bool show_demo_window = false;
+	bool show_stack_tool_window = false;
+#endif
+	bool show_style_editor_window = false;
+	bool show_metrics_window = false;
+	bool show_about_window = false;
+
 	// Our state
-	bool show_demo_window = true;
 	bool show_another_window = false;
+	bool show_editor_window = false;
+
+	TextEditor editor;
 
 	// Main loop
 	while (window.isActive())
@@ -96,13 +109,90 @@ int main(int, char**)
 
 		// Start a new Dear ImGui frame
 		graphics_backend::NewFrame();
-		//ImGui::DockSpaceOverViewport();
+		ImGui::DockSpaceOverViewport();
 
-		// 1. Show the big demo window
-		// (Most of the sample code is in ImGui::ShowDemoWindow()! You can
-		// browse its code to learn more about Dear ImGui!).
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				ImGui::MenuItem("Open");
+				ImGui::MenuItem("Save");
+				ImGui::MenuItem("Close");
+
+				ImGui::Separator();
+
+				if (ImGui::BeginMenu("Import"))
+				{
+					ImGui::MenuItem("Text");
+					ImGui::MenuItem("Image");
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::BeginMenu("Export"))
+				{
+					ImGui::MenuItem("PDF");
+					ImGui::MenuItem("HTML");
+					ImGui::MenuItem("LaTeX");
+					ImGui::EndMenu();
+				}
+
+				ImGui::Separator();
+
+				ImGui::MenuItem("Settings");
+				ImGui::MenuItem("Quit");
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Window"))
+			{
+				ImGui::MenuItem("Editor Test", NULL, &show_editor_window);
+
+				ImGui::Separator();
+
+#ifdef DEBUG
+				ImGui::MenuItem("Demo Window", NULL, &show_demo_window);
+				ImGui::MenuItem("Stack Tool", NULL, &show_stack_tool_window);
+#endif
+				ImGui::MenuItem("Style Editor", NULL, &show_style_editor_window);
+				ImGui::MenuItem("UI Performance Metrics", NULL, &show_metrics_window);
+				ImGui::MenuItem("About Dear ImGui", NULL, &show_about_window);
+				ImGui::EndMenu();
+			}
+
+			ImGui::Separator();
+
+#ifdef SHOW_FPS_COUNTER
+			ImGui::TextDisabled("%2.1f FPS [%2.0f ms/f]", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
+			ImGui::Separator();
+#endif
+
+#ifdef DEBUG
+			ImGui::TextDisabled(VERSION_TRIM);
+#else
+			ImGui::TextDisabled(VERSION_SHORT);
+#endif
+			ImGui::EndMainMenuBar();
+		}
+
+#ifdef DEBUG
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
+		if (show_stack_tool_window)
+			ImGui::ShowStackToolWindow(&show_stack_tool_window);
+#endif
+		if (show_style_editor_window)
+		{
+			if (ImGui::Begin("Style Editor", &show_style_editor_window))
+			{
+				ImGui::ShowStyleEditor(&ImGui::GetStyle());
+			}
+			ImGui::End();
+		}
+		if (show_metrics_window)
+			ImGui::ShowMetricsWindow(&show_metrics_window);
+		if (show_about_window)
+			ImGui::ShowAboutWindow(&show_about_window);
 
 		// 2. Show a simple window that we create ourselves. We use a
 		{ // Begin/End pair to created a named window.
@@ -110,27 +200,29 @@ int main(int, char**)
 			static int counter = 0;
 
 			// Create a window called "Hello, world!" and append into it.
-			ImGui::Begin("Hello, world!");
+			if (ImGui::Begin("Hello, world!"))
+			{
+				// Display some text (you can use a format strings too)
+				ImGui::Text("This is some useful text.");
+				// Edit bools storing our window open/close state
+				ImGui::Checkbox("Demo Window", &show_demo_window);
+				ImGui::Checkbox("Another Window", &show_another_window);
+				ImGui::Checkbox("Show the Editor", &show_editor_window);
 
-			// Display some text (you can use a format strings too)
-			ImGui::Text("This is some useful text.");
-			// Edit bools storing our window open/close state
-			ImGui::Checkbox("Demo Window", &show_demo_window);
-			ImGui::Checkbox("Another Window", &show_another_window);
+				// Edit 1 float using a slider from 0.0f to 1.0f
+				ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+				// Edit 3 floats representing a color
+				ImGui::ColorEdit3("clear color", &ImGui::GetStyle().Colors[ImGuiCol_DockingEmptyBg].x);
 
-			// Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-			// Edit 3 floats representing a color
-			ImGui::ColorEdit3("clear color", vulkan.getClearColorPointer());
+				// Buttons return true when clicked (most widgets return true when edited/activated)
+				if (ImGui::Button("Button"))
+					counter++;
+				ImGui::SameLine();
+				ImGui::Text("counter = %d", counter);
 
-			// Buttons return true when clicked (most widgets return true when edited/activated)
-			if (ImGui::Button("Button"))
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
-
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-					1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+						1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			}
 			ImGui::End();
 		}
 
@@ -139,10 +231,55 @@ int main(int, char**)
 		{
 			// Pass a pointer to our bool variable (the window will have a closing
 			// button that will clear the bool when clicked)
-			ImGui::Begin("Another Window", &show_another_window);
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				show_another_window = false;
+			if (ImGui::Begin("Another Window", &show_another_window))
+			{
+				ImGui::Text("Hello from another window!");
+				if (ImGui::Button("Close Me"))
+					show_another_window = false;
+			}
+			ImGui::End();
+		}
+
+		if (show_editor_window)
+		{
+			ImGui::SetNextWindowSize(ImVec2(0, 500), ImGuiCond_FirstUseEver);
+			if (ImGui::Begin("Editor Test", &show_editor_window, ImGuiWindowFlags_MenuBar))
+			{
+				if (ImGui::BeginMenuBar())
+				{
+					if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, editor.CanUndo()))
+						editor.Undo();
+					if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, editor.CanRedo()))
+						editor.Redo();
+
+					ImGui::Separator();
+
+					if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, editor.HasSelection()))
+						editor.Copy();
+					if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, editor.HasSelection()))
+						editor.Cut();
+					if (ImGui::MenuItem("Delete", "Del", nullptr, editor.HasSelection()))
+						editor.Delete();
+					if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, ImGui::GetClipboardText() != nullptr))
+						editor.Paste();
+
+					ImGui::Separator();
+
+					ImGui::Text("%4d lines", editor.GetTotalLines());
+
+					ImGui::EndMenuBar();
+				}
+
+				editor.Render("TextEditor", ImVec2(0, ImGui::GetWindowHeight() - (ImGui::GetTextLineHeightWithSpacing() * 4)));
+
+				auto cpos = editor.GetCursorPosition();
+				ImGui::Text("%c%c | %6d:%-6d | %s | %s | UTF-8",
+						editor.CanUndo() ? '<' : ' ',
+						editor.CanRedo() ? '>' : ' ',
+						cpos.mLine + 1, cpos.mColumn + 1,
+						editor.IsOverwrite() ? "Ovr" : "Ins",
+						editor.GetLanguageDefinition().mName.c_str());
+			}
 			ImGui::End();
 		}
 
