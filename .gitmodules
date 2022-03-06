@@ -6,3 +6,7 @@
 	path = lib/ImGuiColorTextEdit
 	url = git@github.com:BalazsJako/ImGuiColorTextEdit.git
 	branch = master
+[submodule "lib/imgui_markdown"]
+	path = lib/imgui_markdown
+	url = git@github.com:juliettef/imgui_markdown
+	branch = main
