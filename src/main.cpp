@@ -22,6 +22,20 @@
 #endif
 
 /**
+ * @brief Get the center point of a viewport
+ *
+ * @param viewport The viewport to get the center of
+ * @return ImVec2 Return the center point
+ */
+inline ImVec2 getViewportCenter(ImGuiViewport* viewport)
+{
+	return ImVec2(
+		viewport->Pos.x + (viewport->Size.x / 2),
+		viewport->Pos.y + (viewport->Size.y / 2)
+	);
+}
+
+/**
  * @brief Main entry point of the programm.
  *
  * @return int The error code of the program. A zero indicates normal termination.
@@ -288,12 +302,14 @@ int main(int, char**)
 
 		if (show_markdown_window)
 		{
+			ImGui::SetNextWindowPos(getViewportCenter(ImGui::GetWindowViewport()),
+					ImGuiCond_FirstUseEver, ImVec2(0.5f, 0.5f));
 			ImGui::SetNextWindowSize(ImVec2(400, 0), ImGuiCond_FirstUseEver);
 			if (ImGui::Begin("Markdown Test", &show_markdown_window))
 			{
 				ImGui::MarkdownConfig config = {
 				};
-				std::string data = "# H1 Header Test\n\nTest lorem ipsum from someone to lazy to google it but needs text anyway to be here to test shit.\n\n## H2 Header Test\n\nAnother test this time for *emphasis* and additionally **strong emphasis**.\n\n### H3 Header Test\n\nThis time there maybe is _underlined text_ but who knows and a line below this text:\n\n___\n\n# List Test\n\n  * Entry one\n  * Entry two\n    * Sub entry\n  * Entry three\n";
+				std::string data = "# H1 Header Test\n\nTest lorem ipsum from someone to lazy to google it but needs text anyway to be here to test shit.\n\n## H2 Header Test\n\nAnother test this time for *emphasis* and additionally **strong emphasis**.\n\n### H3 Header Test\n\nThis time there is a line below this text:\n\n___\n\n# List Test\n\n  * Entry one\n  * Entry two\n    * Sub entry\n  * Entry three\n";
 				ImGui::Markdown(data.c_str(), data.length(), config);
 			}
 			ImGui::End();
