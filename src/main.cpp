@@ -13,6 +13,7 @@
 #include <stdexcept>
 
 #include "imgui.h"
+#include "imgui_markdown.h"
 #include "TextEditor.h"
 #include "graphics_backend.h"
 
@@ -90,6 +91,7 @@ int main(int, char**)
 	// Our state
 	bool show_another_window = false;
 	bool show_editor_window = false;
+	bool show_markdown_window = false;
 
 	TextEditor editor;
 
@@ -147,6 +149,7 @@ int main(int, char**)
 			if (ImGui::BeginMenu("Window"))
 			{
 				ImGui::MenuItem("Editor Test", NULL, &show_editor_window);
+				ImGui::MenuItem("Markdown Test", NULL, &show_markdown_window);
 
 				ImGui::Separator();
 
@@ -279,6 +282,19 @@ int main(int, char**)
 						cpos.mLine + 1, cpos.mColumn + 1,
 						editor.IsOverwrite() ? "Ovr" : "Ins",
 						editor.GetLanguageDefinition().mName.c_str());
+			}
+			ImGui::End();
+		}
+
+		if (show_markdown_window)
+		{
+			ImGui::SetNextWindowSize(ImVec2(400, 0), ImGuiCond_FirstUseEver);
+			if (ImGui::Begin("Markdown Test", &show_markdown_window))
+			{
+				ImGui::MarkdownConfig config = {
+				};
+				std::string data = "# H1 Header Test\n\nTest lorem ipsum from someone to lazy to google it but needs text anyway to be here to test shit.\n\n## H2 Header Test\n\nAnother test this time for *emphasis* and additionally **strong emphasis**.\n\n### H3 Header Test\n\nThis time there maybe is _underlined text_ but who knows and a line below this text:\n\n___\n\n# List Test\n\n  * Entry one\n  * Entry two\n    * Sub entry\n  * Entry three\n";
+				ImGui::Markdown(data.c_str(), data.length(), config);
 			}
 			ImGui::End();
 		}
