@@ -12,7 +12,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "imgui.h"
+#include "imgui_tools.h"
 #include "imgui_markdown.h"
 #include "TextEditor.h"
 #include "graphics_backend.h"
@@ -27,12 +27,9 @@
  * @param viewport The viewport to get the center of
  * @return ImVec2 Return the center point
  */
-inline ImVec2 getViewportCenter(ImGuiViewport* viewport)
+inline ImVecN<2> getViewportCenter(ImGuiViewport* viewport)
 {
-	return ImVec2(
-		viewport->Pos.x + (viewport->Size.x / 2),
-		viewport->Pos.y + (viewport->Size.y / 2)
-	);
+	return viewport->Pos + (viewport->Size / 2.0f);
 }
 
 /**
@@ -259,7 +256,7 @@ int main(int, char**)
 
 		if (show_editor_window)
 		{
-			ImGui::SetNextWindowSize(ImVec2(0, 500), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVecN<2>(0.0f, 500.0f), ImGuiCond_FirstUseEver);
 			if (ImGui::Begin("Editor Test", &show_editor_window, ImGuiWindowFlags_MenuBar))
 			{
 				if (ImGui::BeginMenuBar())
