@@ -16,6 +16,7 @@
 #include "imgui_markdown.h"
 #include "TextEditor.h"
 #include "graphics_backend.h"
+#include "settings.h"
 
 #ifdef DEBUG
 	#define SHOW_FPS_COUNTER
@@ -79,6 +80,8 @@ int main(int, char**)
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark(); //or ImGui::StyleColorsClassic();
 	}
+
+	StyleContext styleContext;
 
 	{
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -196,13 +199,17 @@ int main(int, char**)
 			ImGui::ShowStackToolWindow(&show_stack_tool_window);
 #endif
 		if (show_style_editor_window)
+			styleContext.ShowStyleEditorWindow(&show_style_editor_window);
+
+		if (show_style_editor_window)
 		{
-			if (ImGui::Begin("Style Editor", &show_style_editor_window))
+			if (ImGui::Begin("Default Style Editor", &show_style_editor_window))
 			{
 				ImGui::ShowStyleEditor(&ImGui::GetStyle());
 			}
 			ImGui::End();
 		}
+
 		if (show_metrics_window)
 			ImGui::ShowMetricsWindow(&show_metrics_window);
 		if (show_about_window)
