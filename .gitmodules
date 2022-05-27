@@ -10,3 +10,7 @@
 	path = lib/imgui_markdown
 	url = git@github.com:juliettef/imgui_markdown
 	branch = main
+[submodule "lib/tinyxml2"]
+	path = lib/tinyxml2
+	url = git@github.com:leethomason/tinyxml2.git
+	branch = master
