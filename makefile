@@ -19,7 +19,7 @@ include .config/functions
 
 # SPECIAL TARGETS
 .PHONY: all
-all: code doc
+all: $(BINDIR)/$(TARGET) doc
 
 .PHONY: default
 default: $(BINDIR)/$(TARGET)
