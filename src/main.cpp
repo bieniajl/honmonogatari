@@ -17,6 +17,7 @@
 #include "TextEditor.h"
 #include "graphics_backend.h"
 #include "settings.h"
+#include "windows.h"
 #include "storage.h"
 
 #ifdef DEBUG
@@ -32,21 +33,6 @@
 inline ImVecN<2> getViewportCenter(ImGuiViewport* viewport)
 {
 	return viewport->Pos + (viewport->Size / 2.0f);
-}
-
-void showShelf(storage::LibraryShelf& shelf)
-{
-	ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-	if (ImGui::TreeNode(shelf.getName().c_str()))
-	{
-		for (auto& sub : shelf.subshelfs)
-			showShelf(sub);
-
-		for (auto& book : shelf)
-			ImGui::BulletText("%s", book.getName().c_str());
-
-		ImGui::TreePop();
-	}
 }
 
 /**
@@ -107,7 +93,7 @@ int main(int, char**)
 	}
 
 	storage::Library library("/tmp/test.library");
-	library.save();
+	graphics::LibraryWindow libraryWindow(&library, true);
 
 	// Initialize the vulkan rendering
 	vulkan.init(window);
@@ -125,7 +111,6 @@ int main(int, char**)
 	bool show_another_window = false;
 	bool show_editor_window = false;
 	bool show_markdown_window = false;
-	bool show_library_window = false;
 
 	TextEditor editor;
 
@@ -184,7 +169,7 @@ int main(int, char**)
 			{
 				ImGui::MenuItem("Editor Test", NULL, &show_editor_window);
 				ImGui::MenuItem("Markdown Test", NULL, &show_markdown_window);
-				ImGui::MenuItem("Library Viewer", NULL, &show_library_window);
+				libraryWindow.showWindowMenuEntry();
 
 				ImGui::Separator();
 
@@ -340,20 +325,7 @@ int main(int, char**)
 			ImGui::End();
 		}
 
-		if (show_library_window)
-		{
-			ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_FirstUseEver);
-			if (ImGui::Begin("Library Viewer", &show_library_window))
-			{
-				ImGui::Text("Owner: %s", library.getOwner().c_str());
-
-				ImGui::Separator();
-
-				for (auto& shelf : library)
-					showShelf(shelf);
-			}
-			ImGui::End();
-		}
+		libraryWindow.show();
 
 		// Rendering
 		ImGui::Render();
