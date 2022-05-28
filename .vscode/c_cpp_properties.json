@@ -6,7 +6,8 @@
                 "${workspaceFolder}/lib/imgui",
                 "${workspaceFolder}/lib/imgui/backends",
                 "${workspaceFolder}/lib/ImGuiColorTextEdit",
-                "${workspaceFolder}/lib/imgui_markdown"
+                "${workspaceFolder}/lib/imgui_markdown",
+                "${workspaceFolder}/lib/tinyxml2"
             ],
             "defines": [
                 "DEBUG",
@@ -14,9 +15,9 @@
                 "VERSION_TRIM=\"\"",
                 "VERSION_FULL=\"\""
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "c11",
-            "cppStandard": "c++17",
+            "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64"
         }
     ],

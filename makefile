@@ -61,7 +61,10 @@ $(OUTDIR)/$(LIBIMGUI)/%.$(OBJEXT): $(LIBDIR)/$(LIBIMGUI)/$(BACKENDDIR)/%.$(CPPEX
 $(OUTDIR)/$(LIBTEXTEDIT)/%.$(OBJEXT): $(LIBDIR)/$(LIBTEXTEDIT)/%.$(CPPEXT) $(BUILDCONFIGURATION)
 	@dirname $@ | xargs mkdir -p
 	$(CPP) $(IMGUIFLAGS) -iquote $(LIBDIR)/$(LIBIMGUI) -c $< -o $@
-
+# TINYXML COMPILING TARGETS
+$(OUTDIR)/$(LIBTINYXML)/%.$(OBJEXT): $(LIBDIR)/$(LIBTINYXML)/%.$(CPPEXT) $(BUILDCONFIGURATION)
+	@dirname $@ | xargs mkdir -p
+	$(CPP) $(IMGUIFLAGS) -c $< -o $@
 
 # -----------------------------------------------------------------------------
 
@@ -92,3 +95,4 @@ reset: clean
 -include $(IMGUIOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
 -include $(BACKENDOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
 -include $(TEXTEDITOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
+-include $(TINYXMLOBJECTS:%.$(OBJEXT)=%.$(MAKEXT))
