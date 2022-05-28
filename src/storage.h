@@ -156,6 +156,25 @@ namespace storage
 		std::string& getName() { return name; }
 
 		/**
+		 * @brief Delete a library shelf from the subshelfs
+		 *
+		 * This deletes the shelf with all its library books and subshelfs.
+		 *
+		 * @param shelf A pointer to the library shelf to delete
+		 * @return true If the deletion was successfull
+		 * @return false If no matching item was found
+		 */
+		bool deleteShelf(LibraryShelf* const shelf);
+		/**
+		 * @brief Delete a library book from this shelf or its subshelfs
+		 *
+		 * @param shelf A pointer to the library book to delete
+		 * @return true If the deletion was successfull
+		 * @return false If no matching item was found
+		 */
+		bool deleteBook(LibraryBook* const book);
+
+		/**
 		 * @brief Returns an iterator to the beginning of the books inside the shelf
 		 *
 		 * The iterator points to the first book inside this shelf. If the vector
@@ -220,6 +239,25 @@ namespace storage
 		std::string& getOwner() { return owner; }
 
 		/**
+		 * @brief Delete a library shelf from the library
+		 *
+		 * This deletes the shelf with all its library books and subshelfs.
+		 *
+		 * @param shelf A pointer to the library shelf to delete
+		 * @return true If the deletion was successfull
+		 * @return false If no matching item was found
+		 */
+		bool deleteShelf(LibraryShelf* const shelf);
+		/**
+		 * @brief Delete a library book from the library
+		 *
+		 * @param shelf A pointer to the library book to delete
+		 * @return true If the deletion was successfull
+		 * @return false If no matching item was found
+		 */
+		bool deleteBook(LibraryBook* const book);
+
+		/**
 		 * @brief Returns an iterator to the beginning of the shelfs inside the library
 		 *
 		 * The iterator points to the first shelf inside this library. If the vector
@@ -265,9 +303,11 @@ namespace storage
 		/// @brief The path where the library was loaded from
 		std::filesystem::path library_path;
 
+	public:
 		/// @brief A list of shells contained in this library
 		std::vector<LibraryShelf> shelfs;
 
+	private:
 		/// @brief The owner of this library
 		std::string owner;
 	};

@@ -43,6 +43,42 @@ storage::LibraryShelf::LibraryShelf(tinyxml2::XMLElement* xmlElement) : name("<u
 		books.emplace_back(book);
 }
 
+bool storage::LibraryShelf::deleteShelf(LibraryShelf* const shelf)
+{
+	for (auto it = subshelfs.begin(); it != subshelfs.end(); ++it)
+	{
+		if (&(*it) == shelf)
+		{
+			subshelfs.erase(it);
+			return true;
+		}
+	}
+
+	for (auto& subShelf : subshelfs)
+		if (subShelf.deleteShelf(shelf))
+			return true;
+
+	return false;
+}
+
+bool storage::LibraryShelf::deleteBook(LibraryBook* const book)
+{
+	for (auto it = books.begin(); it != books.end(); ++it)
+	{
+		if (&(*it) == book)
+		{
+			books.erase(it);
+			return true;
+		}
+	}
+
+	for (auto& subShelf : subshelfs)
+		if (subShelf.deleteBook(book))
+			return true;
+
+	return false;
+}
+
 tinyxml2::XMLElement* storage::LibraryShelf::serialize(tinyxml2::XMLDocument* document)
 {
 	tinyxml2::XMLElement* xmlElement = document->NewElement("shelf");
@@ -114,6 +150,22 @@ storage::Library::Library(std::filesystem::path path) : library_path(path), owne
 	for (tinyxml2::XMLElement* shelf = xmlElement->FirstChildElement("shelf");
 			shelf != nullptr; shelf = shelf->NextSiblingElement("shelf"))
 		shelfs.emplace_back(shelf);
+}
+
+bool storage::Library::deleteShelf(LibraryShelf* const shelf)
+{
+	for (auto& _shelf : shelfs)
+		if (_shelf.deleteShelf(shelf))
+			return true;
+	return false;
+}
+
+bool storage::Library::deleteBook(LibraryBook* const book)
+{
+	for (auto& shelf : shelfs)
+		if (shelf.deleteBook(book))
+			return true;
+	return false;
 }
 
 void storage::Library::save(const std::filesystem::path& path)
