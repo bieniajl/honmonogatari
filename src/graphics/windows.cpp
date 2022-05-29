@@ -2,6 +2,12 @@
 #include "imgui_tools.h"
 #include "imgui_markdown.h"
 
+#ifdef DEBUG
+	#ifndef SHOW_FPS_COUNTER
+		#define SHOW_FPS_COUNTER
+	#endif
+#endif
+
 void graphics::ViewportRenderer::renderMainMenuBar()
 {
 	if (ImGui::BeginMainMenuBar())

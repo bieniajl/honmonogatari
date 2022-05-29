@@ -12,17 +12,9 @@
 #include <iostream>
 #include <stdexcept>
 
-#ifdef DEBUG
-	#ifndef SHOW_FPS_COUNTER
-		#define SHOW_FPS_COUNTER
-	#endif
-#endif
-
 #include "graphics/graphics_backend.h"
 #include "graphics/imgui_tools.h"
 #include "graphics/windows.h"
-#include "imgui_markdown.h"
-#include "TextEditor.h"
 #include "settings.h"
 #include "storage.h"
 
