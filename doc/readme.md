@@ -34,12 +34,21 @@ You can find all generated executables inside the `bin` directory.
 |    clean     | Delete logfiles, executables and incremental build files                                    |
 |    reset     | Run the clean command and delete the build configuration and compiled documentation as well |
 
-
+---
 
 ## Versioning
 
 This program uses semantic versioning.
 See [semver.org](https://semver.org/spec/v1.0.0.html) for more details.
+
+
+
+## License
+
+This program is licensed under the [MIT Lincense](https://en.wikipedia.org/wiki/MIT_License).
+See the license for more info on what you are permitted and required to do when you want to use this program or modify it.
+
+[=> Github License Page](https://github.com/bieniajl/honmonogatari/blob/master/license)
 
 ---
 
