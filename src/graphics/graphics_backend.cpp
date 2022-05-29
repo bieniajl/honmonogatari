@@ -5,7 +5,7 @@
 #define IM_ARRAYSIZE(_ARR) ((int)(sizeof(_ARR) / sizeof(*(_ARR))))
 
 
-namespace graphics_backend
+namespace graphics
 {
 	std::mutex GlfwWindow::globalOperationMutex;
 	short GlfwWindow::globalWindowCount(0);
@@ -501,4 +501,4 @@ namespace graphics_backend
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
-} // namespace graphics_backend
+} // namespace graphics

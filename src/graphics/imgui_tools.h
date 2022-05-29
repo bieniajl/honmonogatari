@@ -1,7 +1,7 @@
 #ifndef IMGUI_TOOLS_H
 #define IMGUI_TOOLS_H
 
-#include <iostream>
+#include <type_traits>
 #include "imgui.h"
 
 template <std::size_t N>

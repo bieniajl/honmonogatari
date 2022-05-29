@@ -3,6 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
+                "${workspaceFolder}/src",
                 "${workspaceFolder}/lib/imgui",
                 "${workspaceFolder}/lib/imgui/backends",
                 "${workspaceFolder}/lib/ImGuiColorTextEdit",

@@ -12,12 +12,12 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "imgui_tools.h"
+#include "graphics/graphics_backend.h"
+#include "graphics/imgui_tools.h"
+#include "graphics/windows.h"
 #include "imgui_markdown.h"
 #include "TextEditor.h"
-#include "graphics_backend.h"
 #include "settings.h"
-#include "windows.h"
 #include "storage.h"
 
 #ifdef DEBUG
@@ -43,23 +43,23 @@ inline ImVecN<2> getViewportCenter(ImGuiViewport* viewport)
 int main(int, char**)
 {
 	// Setup glfw
-	graphics_backend::GlfwWindow::setErrorCallback(
+	graphics::GlfwWindow::setErrorCallback(
 		[] (int error, const char* description)
 		{
 			std::cerr << "GLFW Error " << +error << ": " << description << std::endl;
 		}
 	);
-	graphics_backend::GlfwWindow window("Honmonogatari");
+	graphics::GlfwWindow window("Honmonogatari");
 
 	// Setup Vulkan
-	graphics_backend::VulkanInstance::setErrorHandler(
+	graphics::VulkanInstance::setErrorHandler(
 		[] (VkResult err)
 		{
 			std::cerr << "[vulkan] Error: VkResult = " << err << std::endl;
 			if (err < 0) throw std::runtime_error("A vulkan error occured");
 		}
 	);
-	graphics_backend::VulkanInstance vulkan(window);
+	graphics::VulkanInstance vulkan(window);
 
 	{ // Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
@@ -129,7 +129,7 @@ int main(int, char**)
 		vulkan.rebuildSwapchain(window);
 
 		// Start a new Dear ImGui frame
-		graphics_backend::NewFrame();
+		graphics::NewFrame();
 		ImGui::DockSpaceOverViewport();
 
 		if (ImGui::BeginMainMenuBar())

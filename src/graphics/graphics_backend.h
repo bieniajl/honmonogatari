@@ -17,7 +17,7 @@
 #endif
 
 
-namespace graphics_backend
+namespace graphics
 {
 	// forward declaration
 	class VulkanInstance;
@@ -134,6 +134,6 @@ namespace graphics_backend
 	 * from the main programm.
 	 */
 	void NewFrame();
-} // namespace graphics_backend
+} // namespace graphics
 
 #endif // GRAPHICS_BACKEND_H
