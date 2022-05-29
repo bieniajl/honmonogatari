@@ -1,21 +1,70 @@
 #ifndef WINDOWS_H
 #define WINDOWS_H
 
+#include <list>
+
+#include "TextEditor.h"
 #include "storage.h"
+
+
 
 namespace graphics
 {
-	class LibraryWindow
+	class StaticWindow
+	{
+		friend class ViewportRenderer;
+
+	public:
+		StaticWindow(bool active = false) : _active(active) { }
+
+		operator bool() { return _active; }
+
+		virtual std::string_view getName() { return "Unnamed Static Window"; }
+
+		bool& isActive() { return _active; }
+
+		virtual void render(bool* open = nullptr) = 0;
+
+	private:
+		bool _active;
+	};
+
+	class ViewportRenderer
 	{
 	public:
-		LibraryWindow(storage::Library* _library, bool _active = false) :
-				active(_active), library(_library), currentShelf(nullptr),
+		ViewportRenderer() :
+#ifdef DEBUG
+				active_demo_window(false), active_stack_tool_window(false),
+#endif
+				active_style_editor_window(false), active_metrics_window(false),
+				active_about_window(false) { }
+
+		void registerStaticWindow(StaticWindow* window) { staticWindows.push_back(window); }
+
+		void renderMainMenuBar();
+		void renderWindows();
+
+	private:
+		std::list<StaticWindow*> staticWindows;
+
+#ifdef DEBUG
+		bool active_demo_window;
+		bool active_stack_tool_window;
+#endif
+		bool active_style_editor_window;
+		bool active_metrics_window;
+		bool active_about_window;
+	};
+
+	class LibraryWindow : public StaticWindow
+	{
+	public:
+		LibraryWindow(storage::Library* _library, bool active = false) :
+				StaticWindow(active), library(_library), currentShelf(nullptr),
 				currentBook(nullptr) { }
 
-		bool& isActive() { return active; }
-
-		void show();
-		bool showWindowMenuEntry();
+		std::string_view getName() { return "Library Viewer"; }
+		void render(bool* open);
 
 	private:
 		void renderMenuBar();
@@ -23,11 +72,32 @@ namespace graphics
 		void renderShelf(storage::LibraryShelf& shelf);
 		void renderBook(storage::LibraryBook& book);
 
-		bool active;
-
 		storage::Library* const library;
 		storage::LibraryShelf* currentShelf;
 		storage::LibraryBook* currentBook;
+	};
+
+	/**
+	 * @todo Remove me
+	 */
+	class EditorWindowTest : public StaticWindow
+	{
+	public:
+		std::string_view getName() { return "Editor Test"; }
+		void render(bool* open);
+
+	private:
+		TextEditor editor;
+	};
+
+	/**
+	 * @todo Remove me
+	 */
+	class MarkdownWindowTest : public StaticWindow
+	{
+	public:
+		std::string_view getName() { return "Markdown Test"; }
+		void render(bool* open);
 	};
 } // namespace graphics
 
