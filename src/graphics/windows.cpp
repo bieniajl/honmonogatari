@@ -217,18 +217,25 @@ void graphics::StyleEditorWindow::render(bool* open)
 			ImGui::EndPopup();
 		}
 
-		if (!_context->isStyleFile("default"))
+		if (ImGui::Combo("Load Style:", &style_index, _context->getStyleFilesImGui()))
+			_context->loadStyleFile(_context->getStyleFiles()[style_index]);
+
+		if (style_index == -1)
 			ImGui::BeginDisabled();
-		if (ImGui::Button("Reload"))
-			_context->loadStyleFile("default");
-		if (!_context->isStyleFile("default"))
+		if (ImGui::Button("Save"))
+			_context->saveStyleFile(_context->getStyleFiles()[style_index]);
+		if (style_index == -1)
 			ImGui::EndDisabled();
 		ImGui::SameLine();
-		if (ImGui::Button("Save"))
+		if (ImGui::Button("Save As Default"))
 			_context->saveStyleFile("default");
+		ImGui::SameLine();
+		ImGui::BeginDisabled();
+		if (ImGui::Button("Save As New Style"))
+		{} // Open dialog for new name input and save as such
+		ImGui::EndDisabled();
 
 #ifdef DEBUG
-		ImGui::SameLine();
 		ImGui::Checkbox("Show standard Style Editor", &show_style_Editor);
 #endif
 

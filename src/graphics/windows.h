@@ -81,7 +81,7 @@ namespace graphics
 	class StyleEditorWindow : public StaticWindow
 	{
 	public:
-		StyleEditorWindow(StyleContext* context) : _context(context)
+		StyleEditorWindow(StyleContext* context) : _context(context), style_index(-1)
 #ifdef DEBUG
 				, show_style_Editor(false)
 #endif
@@ -93,6 +93,7 @@ namespace graphics
 	private:
 		StyleContext* const _context;
 		ImGuiTextFilter _filter;
+		int style_index;
 
 #ifdef DEBUG
 		bool show_style_Editor;

@@ -36,6 +36,29 @@ StyleContext::StyleContext(std::filesystem::path path) : styleFolder(path)
 	}
 }
 
+std::vector<std::string> StyleContext::getStyleFiles()
+{
+	std::vector<std::string> styles;
+
+	for (auto& entry : std::filesystem::directory_iterator(styleFolder))
+		styles.emplace_back(entry.path().stem());
+
+	return styles;
+}
+
+const char* StyleContext::getStyleFilesImGui()
+{
+	std::stringstream outStream;
+
+	for (auto& entry : std::filesystem::directory_iterator(styleFolder))
+		outStream << entry.path().stem() << '\0';
+
+	// Ensure that even with zero elements there are always two zero bytes
+	outStream << '\0' << '\0';
+
+	return outStream.str().c_str();
+}
+
 bool StyleContext::isStyleFile(const std::string& name)
 {
 	return std::filesystem::is_regular_file(styleFolder / (name + ".style"));

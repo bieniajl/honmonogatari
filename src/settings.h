@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <filesystem>
+#include <vector>
 
 #include "graphics/imgui_tools.h"
 
@@ -67,6 +68,23 @@ public:
 	 * @param path The location of the style configuration
 	 */
 	StyleContext(std::filesystem::path path);
+
+	/**
+	 * @brief Get a vector of all available style files
+	 *
+	 * @return std::vector<std::string> with the names of the styles
+	 */
+	std::vector<std::string> getStyleFiles();
+
+	/**
+	 * @brief Get the style files as a c string for use with ImGui
+	 *
+	 * This function returns the style names as a '\0' c string which is
+	 * terminated by dual '\0'.
+	 *
+	 * @return const char* The c string for ImGui
+	 */
+	const char* getStyleFilesImGui();
 
 	/**
 	 * @brief Check if a specific style exists
