@@ -87,12 +87,9 @@ int main(int, char**)
 
 		//io.ConfigViewportsNoAutoMerge = true;
 		//io.ConfigViewportsNoTaskBarIcon = true;
-
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark(); //or ImGui::StyleColorsClassic();
 	}
 
-	// Setup styling
+	// Setup the styling context
 	StyleContext styleContext(rootFLS.getConfigLocation("styles"));
 	graphics::StyleEditorWindow styleEditorWindow(&styleContext);
 	viewportRender.registerSettingsWindow(&styleEditorWindow);
@@ -121,15 +118,6 @@ int main(int, char**)
 		// Use the viewport renderer to fill the main Dear ImGui frame
 		viewportRender.renderMainMenuBar();
 		viewportRender.renderWindows();
-
-		if (false)
-		{
-			if (ImGui::Begin("Default Style Editor", nullptr))
-			{
-				ImGui::ShowStyleEditor(&ImGui::GetStyle());
-			}
-			ImGui::End();
-		}
 
 		// Rendering
 		ImGui::Render();

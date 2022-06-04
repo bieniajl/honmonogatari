@@ -81,7 +81,11 @@ namespace graphics
 	class StyleEditorWindow : public StaticWindow
 	{
 	public:
-		StyleEditorWindow(StyleContext* context) : _context(context) { }
+		StyleEditorWindow(StyleContext* context) : _context(context)
+#ifdef DEBUG
+				, show_style_Editor(false)
+#endif
+				{ }
 
 		std::string_view getName() { return "Style Editor"; }
 		void render(bool* open);
@@ -89,6 +93,10 @@ namespace graphics
 	private:
 		StyleContext* const _context;
 		ImGuiTextFilter _filter;
+
+#ifdef DEBUG
+		bool show_style_Editor;
+#endif
 	};
 
 	/**

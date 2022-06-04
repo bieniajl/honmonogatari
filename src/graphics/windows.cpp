@@ -227,6 +227,11 @@ void graphics::StyleEditorWindow::render(bool* open)
 		if (ImGui::Button("Save"))
 			_context->saveStyleFile("default");
 
+#ifdef DEBUG
+		ImGui::SameLine();
+		ImGui::Checkbox("Show standard Style Editor", &show_style_Editor);
+#endif
+
 		ImGui::Separator();
 
 		ImGui::PushItemWidth(std::max(150.0f, ImGui::GetWindowWidth() - 190.0f));
@@ -360,6 +365,17 @@ void graphics::StyleEditorWindow::render(bool* open)
 		ImGui::PopItemWidth();
 	}
 	ImGui::End();
+
+#ifdef DEBUG
+	if (show_style_Editor)
+	{
+		if (ImGui::Begin("Default Style Editor", &show_style_Editor))
+		{
+			ImGui::ShowStyleEditor(_context->current_style);
+		}
+		ImGui::End();
+	}
+#endif
 }
 
 void graphics::EditorWindowTest::render(bool* open)
