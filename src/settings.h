@@ -8,20 +8,6 @@
 
 
 /**
- * @brief File Exception used in the settings code.
- *
- * @todo Unify with storage::FileError
- * @deprecated Is in conflict with storage::FileError
- * @see storage::FileError
- */
-class FileException : public std::runtime_error
-{
-public:
-	template<typename... T>
-	FileException(T... what) : runtime_error((std::string() += ... += what)) { }
-};
-
-/**
  * @brief The File Location Service is responsible for gathering the correct file paths.
  */
 class FileLocationService

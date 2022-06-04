@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "settings.h"
+#include "exceptions.h"
 
 FileLocationService::FileLocationService()
 {
@@ -45,19 +46,19 @@ void StyleContext::loadStyleFile(const std::string& name)
 	std::filesystem::path path = styleFolder / (name + ".style");
 
 	if (!std::filesystem::is_regular_file(path))
-		throw FileException("Style file <", path, "> does not exist.");
+		throw storage::FileError("Style file <", path, "> does not exist.");
 
 	std::ifstream input(path, std::ifstream::binary | std::ifstream::ate);
 
 	if (input.tellg() != 0x450)
-		throw FileException("Style file <", path, "> has length of ",
+		throw storage::FileError("Style file <", path, "> has length of ",
 				std::to_string(input.tellg()), " instead of 1104.");
 	input.seekg(0);
 
 	char header[0x10 + 1] = {};
 	input.read(header, 0x10);
 	if (std::string("honmonostyle 1.0").compare(header))
-		throw FileException("Style file <", path, "> has a incorrect header.");
+		throw storage::FileError("Style file <", path, "> has a incorrect header.");
 
 	unsigned int value;
 

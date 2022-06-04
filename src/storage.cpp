@@ -1,7 +1,8 @@
-#include "storage.h"
-
 #include <functional>
+
+#include "storage.h"
 #include "tinyxml2.h"
+#include "exceptions.h"
 
 storage::LibraryBook::LibraryBook(tinyxml2::XMLElement* xmlElement) : name("<untitled>"), location("")
 {

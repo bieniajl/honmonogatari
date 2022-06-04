@@ -122,10 +122,6 @@ int main(int, char**)
 		viewportRender.renderMainMenuBar();
 		viewportRender.renderWindows();
 
-
-		if (false)
-			styleContext.ShowStyleEditorWindow(nullptr);
-
 		if (false)
 		{
 			if (ImGui::Begin("Default Style Editor", nullptr))
