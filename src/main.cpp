@@ -39,6 +39,7 @@ inline ImVecN<2> getViewportCenter(ImGuiViewport* viewport)
 int main(int, char**)
 {
 	// Setup backend classes
+	FileLocationService rootFLS;
 	graphics::ViewportRenderer viewportRender;
 	storage::Library library("/tmp/test.library");
 
@@ -92,13 +93,9 @@ int main(int, char**)
 	}
 
 	// Setup styling
-	StyleContext styleContext;
-	{
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.188f, 0.25f, 0.25f, 1.0f);
-	}
+	StyleContext styleContext(rootFLS.getConfigLocation("styles"));
+	graphics::StyleEditorWindow styleEditorWindow(&styleContext);
+	viewportRender.registerSettingsWindow(&styleEditorWindow);
 
 	// Initialize the vulkan rendering
 	vulkan.init(window);

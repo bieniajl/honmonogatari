@@ -5,6 +5,7 @@
 
 #include "TextEditor.h"
 #include "storage.h"
+#include "settings.h"
 
 
 
@@ -36,22 +37,22 @@ namespace graphics
 #ifdef DEBUG
 				active_demo_window(false), active_stack_tool_window(false),
 #endif
-				active_style_editor_window(false), active_metrics_window(false),
-				active_about_window(false) { }
+				active_metrics_window(false), active_about_window(false) { }
 
 		void registerStaticWindow(StaticWindow* window) { staticWindows.push_back(window); }
+		void registerSettingsWindow(StaticWindow* window) { settingsWindows.push_back(window); }
 
 		void renderMainMenuBar();
 		void renderWindows();
 
 	private:
 		std::list<StaticWindow*> staticWindows;
+		std::list<StaticWindow*> settingsWindows;
 
 #ifdef DEBUG
 		bool active_demo_window;
 		bool active_stack_tool_window;
 #endif
-		bool active_style_editor_window;
 		bool active_metrics_window;
 		bool active_about_window;
 	};
@@ -75,6 +76,19 @@ namespace graphics
 		storage::Library* const library;
 		storage::LibraryShelf* currentShelf;
 		storage::LibraryBook* currentBook;
+	};
+
+	class StyleEditorWindow : public StaticWindow
+	{
+	public:
+		StyleEditorWindow(StyleContext* context) : _context(context) { }
+
+		std::string_view getName() { return "Style Editor"; }
+		void render(bool* open);
+
+	private:
+		StyleContext* const _context;
+		ImGuiTextFilter _filter;
 	};
 
 	/**
