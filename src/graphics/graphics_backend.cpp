@@ -25,6 +25,8 @@ namespace graphics
 
 		// set window hints
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHintString(GLFW_X11_CLASS_NAME, "ImGui-Docking");
+		glfwWindowHintString(GLFW_X11_INSTANCE_NAME, "honmonogatari");
 
 		// setup window in fullscreen on the primary monitor
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
