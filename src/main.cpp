@@ -12,7 +12,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "graphics/graphics_backend.h"
+#include "graphics/backend.h"
 #include "graphics/imgui_tools.h"
 #include "graphics/windows.h"
 #include "settings.h"

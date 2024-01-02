@@ -1,6 +1,6 @@
 #include <iostream>
 #include "imgui_impl_glfw.h"
-#include "graphics_backend.h"
+#include "backend.h"
 
 #define IM_ARRAYSIZE(_ARR) ((int)(sizeof(_ARR) / sizeof(*(_ARR))))
 
