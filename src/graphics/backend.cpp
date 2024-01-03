@@ -98,24 +98,28 @@ namespace graphics
 
 		{ // Create Vulkan Instance
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
-			// Enabling validation layers
-			const char* layers[] = { "VK_LAYER_KHRONOS_validation" };
+			// Add extra extensions to the required ones
 			std::vector<const char*> extensions_ext(extensions, extensions + extensions_count);
 			extensions_ext.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 			extensions_ext.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
+			// Set the validation layers
+			const std::array layers {
+				"VK_LAYER_KHRONOS_validation"
+			};
+
 			// Create Vulkan Instance
-			VkInstanceCreateInfo create_info = {
+			const VkInstanceCreateInfo create_info = {
 				.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-				.enabledLayerCount = 1,
-				.ppEnabledLayerNames = layers,
+				.enabledLayerCount = layers.size(),
+				.ppEnabledLayerNames = layers.data(),
 				.enabledExtensionCount = static_cast<uint32_t>(extensions_ext.size()),
 				.ppEnabledExtensionNames = extensions_ext.data()
 			};
 			callErrorHandler(vkCreateInstance(&create_info, g_Allocator, &g_Instance));
 
 			// Setup the debug report callback
-			VkDebugReportCallbackCreateInfoEXT debug_report_ci = {
+			const VkDebugReportCallbackCreateInfoEXT debug_report_ci = {
 				.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
 				.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT
 						| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
@@ -124,7 +128,7 @@ namespace graphics
 			};
 
 			// Get the function pointer (required for any extensions)
-			auto cdrc = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
+			const auto cdrc = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
 					g_Instance, "vkCreateDebugReportCallbackEXT");
 			if (cdrc == nullptr)
 			{
@@ -133,7 +137,7 @@ namespace graphics
 			callErrorHandler(cdrc(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport));
 #else
 			// Create Vulkan Instance without any debug feature
-			VkInstanceCreateInfo create_info = {
+			const VkInstanceCreateInfo create_info = {
 				.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 				.enabledExtensionCount = extensions_count,
 				.ppEnabledExtensionNames = extensions
@@ -146,7 +150,9 @@ namespace graphics
 			uint32_t gpu_count;
 			callErrorHandler(vkEnumeratePhysicalDevices(g_Instance, &gpu_count, NULL));
 			if (gpu_count == 0)
+			{
 				throw std::runtime_error("Can't find suitable gpu");
+			}
 
 			std::vector<VkPhysicalDevice> gpus(gpu_count);
 			callErrorHandler(vkEnumeratePhysicalDevices(g_Instance, &gpu_count, gpus.data()));
@@ -191,22 +197,31 @@ namespace graphics
 		}
 
 		{ // Create Logical Device (with 1 queue)
-			unsigned int device_extension_count = 1;
-			const char* device_extensions[] = { "VK_KHR_swapchain" };
-			const float queue_priority[] = { 1.0f };
-			VkDeviceQueueCreateInfo queue_info[1] = {{
-				.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				.queueFamilyIndex = g_QueueFamily,
-				.queueCount = 1,
-				.pQueuePriorities = queue_priority
-			}};
-			VkDeviceCreateInfo create_info = {
-				.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-				.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]),
-				.pQueueCreateInfos = queue_info,
-				.enabledExtensionCount = device_extension_count,
-				.ppEnabledExtensionNames = device_extensions
+			const std::array device_extensions {
+				"VK_KHR_swapchain"
 			};
+
+			const std::array queue_priority {
+				1.0f
+			};
+
+			const std::array queue_info {
+				VkDeviceQueueCreateInfo {
+					.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+					.queueFamilyIndex = g_QueueFamily,
+					.queueCount = queue_priority.size(),
+					.pQueuePriorities = queue_priority.data()
+				}
+			};
+
+			const VkDeviceCreateInfo create_info = {
+				.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+				.queueCreateInfoCount = queue_info.size(),
+				.pQueueCreateInfos = queue_info.data(),
+				.enabledExtensionCount = device_extensions.size(),
+				.ppEnabledExtensionNames = device_extensions.data()
+			};
+
 			callErrorHandler(vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device));
 			vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);
 		}
@@ -224,7 +239,7 @@ namespace graphics
 				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
 			};
 
-			VkDescriptorPoolCreateInfo pool_info = {
+			const VkDescriptorPoolCreateInfo pool_info = {
 				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 				.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
 				.maxSets = std::accumulate(
@@ -262,6 +277,7 @@ namespace graphics
 				VK_FORMAT_B8G8R8_UNORM,
 				VK_FORMAT_R8G8B8_UNORM
 			};
+
 			mainData.SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(
 				g_PhysicalDevice,
 				mainData.Surface,
@@ -299,7 +315,6 @@ namespace graphics
 			int width;
 			int height;
 			glfwGetFramebufferSize(window.glfwWindow, &width, &height);
-
 			ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice,
 					g_Device, &mainData, g_QueueFamily, g_Allocator, width,
 					height, g_MinImageCount);
@@ -318,7 +333,7 @@ namespace graphics
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
 		// Remove the debug report callback
-		auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)
+		const auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)
 				vkGetInstanceProcAddr(g_Instance, "vkDestroyDebugReportCallbackEXT");
 		vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
 #endif // IMGUI_VULKAN_DEBUG_REPORT
@@ -384,7 +399,7 @@ namespace graphics
 					mainData.Frames[mainData.FrameIndex].CommandBuffer;
 
 			callErrorHandler(vkResetCommandPool(g_Device, command_pool, 0));
-			VkCommandBufferBeginInfo begin_info = {
+			const VkCommandBufferBeginInfo begin_info = {
 				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 				.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
 			};
@@ -392,7 +407,7 @@ namespace graphics
 
 			ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
 
-			VkSubmitInfo end_info = {
+			const VkSubmitInfo end_info = {
 				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 				.commandBufferCount = 1,
 				.pCommandBuffers = &command_buffer
@@ -457,7 +472,7 @@ namespace graphics
 
 		{
 			callErrorHandler(vkResetCommandPool(g_Device, frameData->CommandPool, 0));
-			VkCommandBufferBeginInfo info = {
+			const VkCommandBufferBeginInfo info = {
 				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 				.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
 			};
@@ -465,7 +480,7 @@ namespace graphics
 		}
 
 		{
-			VkRenderPassBeginInfo info = {
+			const VkRenderPassBeginInfo info = {
 				.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 				.renderPass = mainData.RenderPass,
 				.framebuffer = frameData->Framebuffer,
@@ -488,8 +503,8 @@ namespace graphics
 		vkCmdEndRenderPass(frameData->CommandBuffer);
 
 		{
-			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			VkSubmitInfo info = {
+			const VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			const VkSubmitInfo info = {
 				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 				.waitSemaphoreCount = 1,
 				.pWaitSemaphores = &image_acquired_semaphore,
@@ -508,9 +523,9 @@ namespace graphics
 	{
 		if (skipPresentFrame || g_SwapChainRebuild) { return; }
 
-		VkSemaphore render_complete_semaphore =
+		const VkSemaphore render_complete_semaphore =
 				mainData.FrameSemaphores[mainData.SemaphoreIndex].RenderCompleteSemaphore;
-		VkPresentInfoKHR info = {
+		const VkPresentInfoKHR info = {
 			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 			.waitSemaphoreCount = 1,
 			.pWaitSemaphores = &render_complete_semaphore,
@@ -518,12 +533,14 @@ namespace graphics
 			.pSwapchains = &mainData.Swapchain,
 			.pImageIndices = &mainData.FrameIndex
 		};
-		VkResult err = vkQueuePresentKHR(g_Queue, &info);
+
+		const VkResult err = vkQueuePresentKHR(g_Queue, &info);
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
 			g_SwapChainRebuild = true;
 			return;
 		}
+
 		callErrorHandler(err);
 		// Now we can use the next set of semaphores
 		mainData.SemaphoreIndex = (mainData.SemaphoreIndex + 1) % mainData.ImageCount;
