@@ -102,12 +102,12 @@ namespace graphics
 			extensions_ext.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 			// Set the validation layers
-			const std::array layers {
+			const std::array layers{
 				"VK_LAYER_KHRONOS_validation"
 			};
 
 			// Create Vulkan Instance
-			const VkInstanceCreateInfo create_info = {
+			const VkInstanceCreateInfo create_info{
 				.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 				.enabledLayerCount = layers.size(),
 				.ppEnabledLayerNames = layers.data(),
@@ -117,7 +117,7 @@ namespace graphics
 			callErrorHandler(vkCreateInstance(&create_info, g_Allocator, &g_Instance));
 
 			// Setup the debug report callback
-			const VkDebugReportCallbackCreateInfoEXT debug_report_ci = {
+			const VkDebugReportCallbackCreateInfoEXT debug_report_ci{
 				.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
 				.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT
 						| VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
@@ -135,7 +135,7 @@ namespace graphics
 			callErrorHandler(cdrc(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport));
 #else
 			// Create Vulkan Instance without any debug feature
-			const VkInstanceCreateInfo create_info = {
+			const VkInstanceCreateInfo create_info{
 				.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 				.enabledExtensionCount = extensions_count,
 				.ppEnabledExtensionNames = extensions
@@ -195,16 +195,16 @@ namespace graphics
 		}
 
 		{ // Create Logical Device (with 1 queue)
-			const std::array device_extensions {
+			const std::array device_extensions{
 				"VK_KHR_swapchain"
 			};
 
-			const std::array queue_priority {
+			const std::array queue_priority{
 				1.0f
 			};
 
-			const std::array queue_info {
-				VkDeviceQueueCreateInfo {
+			const std::array queue_info{
+				VkDeviceQueueCreateInfo{
 					.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
 					.queueFamilyIndex = g_QueueFamily,
 					.queueCount = queue_priority.size(),
@@ -212,7 +212,7 @@ namespace graphics
 				}
 			};
 
-			const VkDeviceCreateInfo create_info = {
+			const VkDeviceCreateInfo create_info{
 				.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 				.queueCreateInfoCount = queue_info.size(),
 				.pQueueCreateInfos = queue_info.data(),
@@ -225,19 +225,19 @@ namespace graphics
 		}
 
 		{ // Create Descriptor Pool
-			const std::array pool_sizes {
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+			const std::array pool_sizes{
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+				VkDescriptorPoolSize{VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}
 			};
 
-			const VkDescriptorPoolCreateInfo pool_info = {
+			const VkDescriptorPoolCreateInfo pool_info{
 				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 				.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
 				.maxSets = std::accumulate(
@@ -269,7 +269,7 @@ namespace graphics
 			}
 
 			// Select Surface Format
-			const std::array requestSurfaceImageFormat {
+			const std::array requestSurfaceImageFormat{
 				VK_FORMAT_B8G8R8A8_UNORM,
 				VK_FORMAT_R8G8B8A8_UNORM,
 				VK_FORMAT_B8G8R8_UNORM,
@@ -286,13 +286,13 @@ namespace graphics
 
 			// Select Present Mode
 #ifdef IMGUI_UNLIMITED_FRAME_RATE
-			const std::array present_modes {
+			const std::array present_modes{
 				VK_PRESENT_MODE_MAILBOX_KHR,
 				VK_PRESENT_MODE_IMMEDIATE_KHR,
 				VK_PRESENT_MODE_FIFO_KHR
 			};
 #else
-			const std::array present_modes {
+			const std::array present_modes{
 				VK_PRESENT_MODE_FIFO_KHR
 			};
 #endif
@@ -397,7 +397,7 @@ namespace graphics
 					mainData.Frames[mainData.FrameIndex].CommandBuffer;
 
 			callErrorHandler(vkResetCommandPool(g_Device, command_pool, 0));
-			const VkCommandBufferBeginInfo begin_info = {
+			const VkCommandBufferBeginInfo begin_info{
 				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 				.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
 			};
@@ -405,7 +405,7 @@ namespace graphics
 
 			ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
 
-			const VkSubmitInfo end_info = {
+			const VkSubmitInfo end_info{
 				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 				.commandBufferCount = 1,
 				.pCommandBuffers = &command_buffer
@@ -478,7 +478,7 @@ namespace graphics
 		}
 
 		{
-			const VkRenderPassBeginInfo info = {
+			const VkRenderPassBeginInfo info{
 				.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 				.renderPass = mainData.RenderPass,
 				.framebuffer = frameData->Framebuffer,
@@ -502,7 +502,7 @@ namespace graphics
 
 		{
 			const VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			const VkSubmitInfo info = {
+			const VkSubmitInfo info{
 				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 				.waitSemaphoreCount = 1,
 				.pWaitSemaphores = &image_acquired_semaphore,
@@ -523,7 +523,7 @@ namespace graphics
 
 		const VkSemaphore render_complete_semaphore =
 				mainData.FrameSemaphores[mainData.SemaphoreIndex].RenderCompleteSemaphore;
-		const VkPresentInfoKHR info = {
+		const VkPresentInfoKHR info{
 			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 			.waitSemaphoreCount = 1,
 			.pWaitSemaphores = &render_complete_semaphore,
