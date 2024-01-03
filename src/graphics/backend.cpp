@@ -3,8 +3,6 @@
 #include "implementation_glfw.h"
 #include "backend.h"
 
-#define IM_ARRAYSIZE(_ARR) ((int)(sizeof(_ARR) / sizeof(*(_ARR))))
-
 namespace graphics
 {
 	std::mutex SystemWindow::globalOperationMutex;
