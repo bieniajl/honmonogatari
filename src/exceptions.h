@@ -6,7 +6,7 @@
 namespace storage
 {
 	/**
-	 * @brief Generall exception for errors occuring during file handling in any way.
+	 * @brief General exception for errors occurring during file handling in any way.
 	 */
 	class FileError : public std::runtime_error
 	{

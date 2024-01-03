@@ -1,5 +1,5 @@
-#ifndef STORGAE_H
-#define STORGAE_H
+#ifndef STORAGE_H
+#define STORAGE_H
 
 #include <filesystem>
 #include <vector>
@@ -78,7 +78,7 @@ namespace storage
 	 * @brief This class represents a shelf inside the library.
 	 *
 	 * A shelf in the library is simply a collection of books. It is important
-	 * that shelfs can contain other shelfs as well.
+	 * that shelf's can contain other shelf's as well.
 	 */
 	class LibraryShelf
 	{
@@ -115,7 +115,7 @@ namespace storage
 		 * This deletes the shelf with all its library books and subshelfs.
 		 *
 		 * @param shelf A pointer to the library shelf to delete
-		 * @return true If the deletion was successfull
+		 * @return true If the deletion was successful
 		 * @return false If no matching item was found
 		 */
 		bool deleteShelf(LibraryShelf* const shelf);
@@ -123,7 +123,7 @@ namespace storage
 		 * @brief Delete a library book from this shelf or its subshelfs
 		 *
 		 * @param shelf A pointer to the library book to delete
-		 * @return true If the deletion was successfull
+		 * @return true If the deletion was successful
 		 * @return false If no matching item was found
 		 */
 		bool deleteBook(LibraryBook* const book);
@@ -158,7 +158,7 @@ namespace storage
 		tinyxml2::XMLElement* serialize(tinyxml2::XMLDocument* document);
 
 	public:
-		/// @brief A list of shelfs contained inside this shelf
+		/// @brief A list of shelf's contained inside this shelf
 		std::vector<LibraryShelf> subshelfs;
 		/// @brief A list of books contained inside this shelf
 		std::vector<LibraryBook> books;
@@ -169,7 +169,7 @@ namespace storage
 	};
 
 	/**
-	 * @brief This class represents a collection of shelfs
+	 * @brief This class represents a collection of shelf's
 	 */
 	class Library
 	{
@@ -198,7 +198,7 @@ namespace storage
 		 * This deletes the shelf with all its library books and subshelfs.
 		 *
 		 * @param shelf A pointer to the library shelf to delete
-		 * @return true If the deletion was successfull
+		 * @return true If the deletion was successful
 		 * @return false If no matching item was found
 		 */
 		bool deleteShelf(LibraryShelf* const shelf);
@@ -206,7 +206,7 @@ namespace storage
 		 * @brief Delete a library book from the library
 		 *
 		 * @param shelf A pointer to the library book to delete
-		 * @return true If the deletion was successfull
+		 * @return true If the deletion was successful
 		 * @return false If no matching item was found
 		 */
 		bool deleteBook(LibraryBook* const book);
@@ -221,7 +221,7 @@ namespace storage
 		 */
 		std::vector<LibraryShelf>::iterator begin() { return shelfs.begin(); }
 		/**
-		 * @brief Returns an iterator to the end of the shelfs inside the library
+		 * @brief Returns an iterator to the end of the shelf's inside the library
 		 *
 		 * The iterator points past the last shelf inside the library. This element
 		 * acts as a placeholder; attempting to access it results in undefined
@@ -267,4 +267,4 @@ namespace storage
 	};
 } // namespace storage
 
-#endif // STORGAE_H
+#endif // STORAGE_H

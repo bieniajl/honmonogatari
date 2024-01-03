@@ -80,5 +80,17 @@
 		"typeindex": "cpp",
 		"valarray": "cpp",
 		"variant": "cpp"
-	}
+	},
+	"cSpell.words": [
+		"CHECKVERSION",
+		"GLFW",
+		"GLFWerrorfun",
+		"GLFWvidmode",
+		"Honmonogatari",
+		"subpass",
+		"tinyxml",
+		"tparam",
+		"VKAPI",
+		"pSwapchains"
+	]
 }

@@ -68,7 +68,7 @@ int main(int, char**)
 
 			if (err < 0)
 			{
-				throw std::runtime_error("A vulkan error occured");
+				throw std::runtime_error("A vulkan error occurred");
 			}
 		}
 	);

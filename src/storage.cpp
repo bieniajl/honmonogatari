@@ -33,7 +33,7 @@ storage::LibraryShelf::LibraryShelf(tinyxml2::XMLElement* xmlElement) : name("<u
 	const char* attrib = xmlElement->Attribute("name");
 	if (attrib != nullptr) name = attrib;
 
-	// Parse all available sub shelfs
+	// Parse all available sub shelf's
 	for (tinyxml2::XMLElement* subShelf = xmlElement->FirstChildElement("shelf");
 			subShelf != nullptr; subShelf = subShelf->NextSiblingElement("shelf"))
 		subshelfs.emplace_back(subShelf);

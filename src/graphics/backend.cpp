@@ -10,7 +10,7 @@ namespace graphics
 
 	SystemWindow::SystemWindow(std::string_view title) : glfwWindow(nullptr)
 	{
-		std::scoped_lock slock (SystemWindow::globalOperationMutex);
+		std::scoped_lock lockGuard (SystemWindow::globalOperationMutex);
 
 		// Setup GLFW
 		if (globalWindowCount++ == 0)
@@ -43,7 +43,7 @@ namespace graphics
 	{
 		glfwDestroyWindow(glfwWindow);
 
-		std::scoped_lock slock (SystemWindow::globalOperationMutex);
+		std::scoped_lock lockGuard (SystemWindow::globalOperationMutex);
 		if (--globalWindowCount == 0)
 		{
 			glfwTerminate();
@@ -90,7 +90,7 @@ namespace graphics
 			skipPresentFrame(false),
 			g_PipelineCache(VK_NULL_HANDLE)
 	{
-		// Get Required Extrensions
+		// Get Required extensions
 		uint32_t extensions_count = 0;
 		const char** extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
 
@@ -306,7 +306,7 @@ namespace graphics
 			// Create SwapChain, RenderPass, Framebuffer, etc.
 			if (g_MinImageCount < 2)
 			{
-				throw std::runtime_error("Not enought swapchain images");
+				throw std::runtime_error("Not enough swapchain images");
 			}
 
 			// Get FramebufferSize

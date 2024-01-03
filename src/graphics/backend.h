@@ -26,7 +26,7 @@ namespace graphics
 	/**
 	 * @brief A wrapper for the glfw window pointer.
 	 *
-	 * This contains the basic glfw setup for the programm.
+	 * This contains the basic glfw setup for the program.
 	 */
 	class SystemWindow
 	{
@@ -130,7 +130,7 @@ namespace graphics
 	 * to create a new frame.
 	 *
 	 * This function removes the need for the backend glfw and vulkan functions
-	 * from the main programm.
+	 * from the main program.
 	 */
 	auto NewFrame() -> void;
 } // namespace graphics
