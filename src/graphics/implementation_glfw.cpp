@@ -116,7 +116,19 @@ struct ImGui_ImplGlfw_Data
     GLFWcharfun             PrevUserCallbackChar;
     GLFWmonitorfun          PrevUserCallbackMonitor;
 
-    ImGui_ImplGlfw_Data()   { memset(this, 0, sizeof(*this)); }
+    ImGui_ImplGlfw_Data() : Window(nullptr), ClientApi(GlfwClientApi_Unknown),
+            Time(0.0), MouseWindow(nullptr), MouseCursors({}),
+            LastValidMousePos(0.0, 0.0), KeyOwnerWindows({}),
+            InstalledCallbacks(false), WantUpdateMonitors(false),
+            PrevUserCallbackWindowFocus(nullptr),
+            PrevUserCallbackCursorPos(nullptr),
+            PrevUserCallbackCursorEnter(nullptr),
+            PrevUserCallbackMousebutton(nullptr),
+            PrevUserCallbackScroll(nullptr),
+            PrevUserCallbackKey(nullptr),
+            PrevUserCallbackChar(nullptr),
+            PrevUserCallbackMonitor(nullptr)
+    { }
 };
 
 // Backend data stored in io.BackendPlatformUserData to allow support for multiple Dear ImGui contexts
