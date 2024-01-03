@@ -15,12 +15,12 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
-compiler_flags=$(dialog --keep-tite --inputbox "C++ Compiler Flags" 0 $DIALOGWIDTH "-std=c++20 -g -Og -D DEBUG -MMD -MP -Wall" 2>&1 1>/dev/tty)
+compiler_flags=$(dialog --keep-tite --inputbox "C++ Compiler Flags" 0 $DIALOGWIDTH "-std=c++23 -g -Og -D DEBUG -MMD -MP -Wall" 2>&1 1>/dev/tty)
 if [ $? != 0 ]; then
 	exit 1
 fi
 
-imgui_flags=$(dialog --keep-tite --inputbox "C++ Compiler Flags for imgui" 0 $DIALOGWIDTH "-std=c++20 -O3 -MMD -MP" 2>&1 1>/dev/tty)
+imgui_flags=$(dialog --keep-tite --inputbox "C++ Compiler Flags for imgui" 0 $DIALOGWIDTH "-std=c++23 -O3 -MMD -MP" 2>&1 1>/dev/tty)
 if [ $? != 0 ]; then
 	exit 1
 fi
