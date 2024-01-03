@@ -5,7 +5,6 @@
             "includePath": [
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/lib/imgui",
-                "${workspaceFolder}/lib/imgui/backends",
                 "${workspaceFolder}/lib/ImGuiColorTextEdit",
                 "${workspaceFolder}/lib/imgui_markdown",
                 "${workspaceFolder}/lib/tinyxml2"
