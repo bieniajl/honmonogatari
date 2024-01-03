@@ -33,7 +33,7 @@ namespace graphics
 	public:
 		friend VulkanInstance;
 		using ErrorFunction = GLFWerrorfun;
-		static inline void setErrorCallback(ErrorFunction function)
+		static inline auto setErrorCallback(ErrorFunction function) -> void
 		{
 			glfwSetErrorCallback(function);
 		}
@@ -51,7 +51,7 @@ namespace graphics
 		SystemWindow& operator=(SystemWindow&&) = delete;
 		SystemWindow& operator=(const SystemWindow&) = delete;
 
-		bool isActive();
+		auto isActive() -> bool;
 	private:
 		::GLFWwindow* glfwWindow;
 	};
@@ -69,12 +69,12 @@ namespace graphics
 	public:
 		using ErrorFunction = std::function<void(VkResult)>;
 
-		static void setErrorHandler(ErrorFunction function)
+		static auto setErrorHandler(ErrorFunction function) -> void
 		{
 			error_handler = function;
 		}
 
-		static void callErrorHandler(VkResult result)
+		static auto callErrorHandler(VkResult result) -> void
 		{
 			if (!result) { return; }
 
@@ -98,10 +98,10 @@ namespace graphics
 
 		// FIXME: find a way to change clear color at runtime
 
-		void init(SystemWindow& window);
-		void rebuildSwapchain(SystemWindow& window);
-		void render();
-		void presentFrame();
+		auto init(SystemWindow& window) -> void;
+		auto rebuildSwapchain(SystemWindow& window) -> void;
+		auto render() -> void;
+		auto presentFrame() -> void;
 
 	private:
 		ImGui_ImplVulkanH_Window mainData;
@@ -132,7 +132,7 @@ namespace graphics
 	 * This function removes the need for the backend glfw and vulkan functions
 	 * from the main programm.
 	 */
-	void NewFrame();
+	auto NewFrame() -> void;
 } // namespace graphics
 
 #endif // GRAPHICS_BACKEND_H

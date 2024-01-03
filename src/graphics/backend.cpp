@@ -50,7 +50,7 @@ namespace graphics
 		}
 	}
 
-	bool SystemWindow::isActive()
+	auto SystemWindow::isActive() -> bool
 	{
 		bool value = !glfwWindowShouldClose(glfwWindow);
 
@@ -340,7 +340,7 @@ namespace graphics
 		vkDestroyInstance(g_Instance, g_Allocator);
 	}
 
-	void VulkanInstance::init(SystemWindow& window)
+	auto VulkanInstance::init(SystemWindow& window) -> void
 	{
 		{ // Setup Platform/Renderer backends
 			ImGui_ImplGlfw_InitForVulkan(window.glfwWindow, true);
@@ -418,7 +418,7 @@ namespace graphics
 		}
 	}
 
-	void VulkanInstance::rebuildSwapchain(SystemWindow& window)
+	auto VulkanInstance::rebuildSwapchain(SystemWindow& window) -> void
 	{
 		// Resize swap chain check
 		if (!g_SwapChainRebuild) { return; }
@@ -437,7 +437,7 @@ namespace graphics
 		}
 	}
 
-	void VulkanInstance::render()
+	auto VulkanInstance::render() -> void
 	{
 		ImDrawData* drawData = ImGui::GetDrawData();
 
@@ -517,7 +517,7 @@ namespace graphics
 		}
 	}
 
-	void VulkanInstance::presentFrame()
+	auto VulkanInstance::presentFrame() -> void
 	{
 		if (skipPresentFrame || g_SwapChainRebuild) { return; }
 
@@ -544,7 +544,7 @@ namespace graphics
 		mainData.SemaphoreIndex = (mainData.SemaphoreIndex + 1) % mainData.ImageCount;
 	}
 
-	void NewFrame()
+	auto NewFrame() -> void
 	{
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
