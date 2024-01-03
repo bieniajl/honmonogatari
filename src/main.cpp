@@ -51,21 +51,25 @@ int main(int, char**)
 	graphics::MarkdownWindowTest markdownWindow;
 	viewportRender.registerStaticWindow(&markdownWindow);
 
-	// Setup glfw
-	graphics::GlfwWindow::setErrorCallback(
+	// Setup the main system window
+	graphics::SystemWindow::setErrorCallback(
 		[] (int error, const char* description)
 		{
 			std::cerr << "GLFW Error " << +error << ": " << description << std::endl;
 		}
 	);
-	graphics::GlfwWindow window("Honmonogatari");
+	graphics::SystemWindow window("Honmonogatari");
 
-	// Setup Vulkan
+	// Setup ImGui-Renderer
 	graphics::VulkanInstance::setErrorHandler(
 		[] (VkResult err)
 		{
 			std::cerr << "[vulkan] Error: VkResult = " << err << std::endl;
-			if (err < 0) throw std::runtime_error("A vulkan error occured");
+
+			if (err < 0)
+			{
+				throw std::runtime_error("A vulkan error occured");
+			}
 		}
 	);
 	graphics::VulkanInstance vulkan(window);

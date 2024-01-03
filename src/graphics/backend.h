@@ -3,13 +3,14 @@
 
 #include <mutex>
 #include <functional>
+#include <string_view>
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
-#include "imgui_impl_vulkan.h"
+#include "implementation_vulkan.h"
 
 //#define IMGUI_UNLIMITED_FRAME_RATE
 #ifdef DEBUG
@@ -27,11 +28,11 @@ namespace graphics
 	 *
 	 * This contains the basic glfw setup for the programm.
 	 */
-	class GlfwWindow
+	class SystemWindow
 	{
 	public:
 		friend VulkanInstance;
-		typedef GLFWerrorfun ErrorFunction;
+		using ErrorFunction = GLFWerrorfun;
 		static inline void setErrorCallback(ErrorFunction function)
 		{
 			glfwSetErrorCallback(function);
@@ -42,13 +43,13 @@ namespace graphics
 		static short globalWindowCount;
 
 	public:
-		GlfwWindow(const char* title = "");
-		GlfwWindow(GlfwWindow&&) = delete;
-		GlfwWindow(const GlfwWindow&) = delete;
-		~GlfwWindow();
+		SystemWindow(std::string_view title = "");
+		SystemWindow(SystemWindow&&) = delete;
+		SystemWindow(const SystemWindow&) = delete;
+		~SystemWindow();
 
-		GlfwWindow& operator=(GlfwWindow&&) = delete;
-		GlfwWindow& operator=(const GlfwWindow&) = delete;
+		SystemWindow& operator=(SystemWindow&&) = delete;
+		SystemWindow& operator=(const SystemWindow&) = delete;
 
 		bool isActive();
 	private:
@@ -66,7 +67,7 @@ namespace graphics
 	class VulkanInstance
 	{
 	public:
-		typedef std::function<void(VkResult)> ErrorFunction;
+		using ErrorFunction = std::function<void(VkResult)>;
 
 		static void setErrorHandler(ErrorFunction function)
 		{
@@ -75,16 +76,19 @@ namespace graphics
 
 		static void callErrorHandler(VkResult result)
 		{
-			if (!result) return;
+			if (!result) { return; }
 
 			if (error_handler != nullptr)
+			{
 				error_handler(result);
+			}
 		}
+
 	private:
 		static ErrorFunction error_handler;
 
 	public:
-		VulkanInstance(GlfwWindow& window);
+		VulkanInstance(SystemWindow& window);
 		VulkanInstance(VulkanInstance&&) = delete;
 		VulkanInstance(const VulkanInstance&) = delete;
 		~VulkanInstance();
@@ -92,15 +96,10 @@ namespace graphics
 		VulkanInstance& operator=(VulkanInstance&&) = delete;
 		VulkanInstance& operator=(const VulkanInstance&) = delete;
 
-		float* getClearColorPointer()
-		{
-			return &mainData.ClearValue.color.float32[0];
-		}
+		// FIXME: find a way to change clear color at runtime
 
-		void setClearColor(float red, float green, float blue);
-
-		void init(GlfwWindow& window);
-		void rebuildSwapchain(GlfwWindow& window);
+		void init(SystemWindow& window);
+		void rebuildSwapchain(SystemWindow& window);
 		void render();
 		void presentFrame();
 

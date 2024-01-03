@@ -3,12 +3,11 @@ OBJECTS          := $(patsubst $(SRCDIR)/%,$(OUTDIR)/$(BLDDIR)/%,$(SOURCES:.$(CP
 
 IMGUISOURCES     := $(shell find -L $(LIBDIR)/$(LIBIMGUI) -maxdepth 1 -type f -name *.$(CPPEXT))
 IMGUIOBJECTS     := $(patsubst $(LIBDIR)/$(LIBIMGUI)/%,$(OUTDIR)/$(LIBIMGUI)/%,$(IMGUISOURCES:.$(CPPEXT)=.$(OBJEXT)))
-BACKENDOBJECTS   := $(OUTDIR)/$(LIBIMGUI)/imgui_impl_vulkan.$(OBJEXT) $(OUTDIR)/$(LIBIMGUI)/imgui_impl_glfw.$(OBJEXT)
 TEXTEDITOBJECTS  := $(OUTDIR)/$(LIBTEXTEDIT)/TextEditor.$(OBJEXT)
 TINYXMLOBJECTS   := $(OUTDIR)/$(LIBTINYXML)/tinyxml2.$(OBJEXT)
 
-COMPILERINCLUDES := -iquote ./$(SRCDIR) -I ./$(LIBDIR)/$(LIBIMGUI) -I ./$(LIBDIR)/$(LIBIMGUI)/$(BACKENDDIR) -I ./$(LIBDIR)/$(LIBTEXTEDIT) -I ./$(LIBDIR)/imgui_markdown -I ./$(LIBDIR)/$(LIBTINYXML)
-LINKINGOBJECTS   := $(OBJECTS) $(IMGUIOBJECTS) $(BACKENDOBJECTS) $(TEXTEDITOBJECTS) $(TINYXMLOBJECTS)
+COMPILERINCLUDES := -iquote ./$(SRCDIR) -I ./$(LIBDIR)/$(LIBIMGUI) -I ./$(LIBDIR)/$(LIBTEXTEDIT) -I ./$(LIBDIR)/imgui_markdown -I ./$(LIBDIR)/$(LIBTINYXML)
+LINKINGOBJECTS   := $(OBJECTS) $(IMGUIOBJECTS) $(TEXTEDITOBJECTS) $(TINYXMLOBJECTS)
 
 VERSION_HASH     := $(shell git rev-parse HEAD 2> /dev/null || echo "0000000000000000000000000000000000000000")
 VERSION_STATE    := $(shell bash -c '[[ -z "$(shell git status -s)" ]] && echo "" || echo " [dirty]"')

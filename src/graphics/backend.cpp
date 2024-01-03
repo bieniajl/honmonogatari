@@ -1,27 +1,33 @@
 #include <iostream>
-#include "imgui_impl_glfw.h"
+#include <numeric>
+#include "implementation_glfw.h"
 #include "backend.h"
 
 #define IM_ARRAYSIZE(_ARR) ((int)(sizeof(_ARR) / sizeof(*(_ARR))))
 
-
 namespace graphics
 {
-	std::mutex GlfwWindow::globalOperationMutex;
-	short GlfwWindow::globalWindowCount(0);
+	std::mutex SystemWindow::globalOperationMutex;
+	short SystemWindow::globalWindowCount(0);
 
-	GlfwWindow::GlfwWindow(const char* title) : glfwWindow(nullptr)
+	SystemWindow::SystemWindow(std::string_view title) : glfwWindow(nullptr)
 	{
-		std::scoped_lock ​(GlfwWindow::globalOperationMutex);
+		std::scoped_lock slock (SystemWindow::globalOperationMutex);
 
 		// Setup GLFW
 		if (globalWindowCount++ == 0)
+		{
 			[[unlikely]] if (!glfwInit())
+			{
 				throw std::runtime_error("Can't initialize GLFW!");
+			}
+		}
 
 		// Check for vulkan support
 		[[unlikely]] if (!glfwVulkanSupported())
+		{
 			throw std::runtime_error("GLFW: Vulkan Not Supported!");
+		}
 
 		// set window hints
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -32,24 +38,28 @@ namespace graphics
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 		glfwWindow = glfwCreateWindow(
-				mode->width, mode->height, title, monitor, NULL);
+				mode->width, mode->height, title.data(), monitor, NULL);
 	}
 
-	GlfwWindow::~GlfwWindow()
+	SystemWindow::~SystemWindow()
 	{
 		glfwDestroyWindow(glfwWindow);
 
-		std::scoped_lock ​(GlfwWindow::globalOperationMutex);
+		std::scoped_lock slock (SystemWindow::globalOperationMutex);
 		if (--globalWindowCount == 0)
+		{
 			glfwTerminate();
+		}
 	}
 
-	bool GlfwWindow::isActive()
+	bool SystemWindow::isActive()
 	{
 		bool value = !glfwWindowShouldClose(glfwWindow);
 
 		[[likely]] if (value)
+		{
 			glfwPollEvents();
+		}
 
 		return value;
 	}
@@ -61,18 +71,25 @@ namespace graphics
 			void* pUserData)
 	{
 		std::cerr << "[vulkan] Debug report from ObjectType: " << objectType << std::endl;
-		std::cerr << "Message: " << pMessage << "\n" << std::endl;
+		std::cerr << "\tLayer-Prefix: " << pLayerPrefix << std::endl;
+		std::cerr << "\tMessage: " << pMessage << "\n" << std::endl;
 		return VK_FALSE;
 	}
 #endif // IMGUI_VULKAN_DEBUG_REPORT
 
 	VulkanInstance::ErrorFunction VulkanInstance::error_handler = nullptr;
 
-	VulkanInstance::VulkanInstance(GlfwWindow& window) : g_Allocator(VK_NULL_HANDLE),
-			g_Instance(VK_NULL_HANDLE), g_PhysicalDevice(VK_NULL_HANDLE),
-			g_QueueFamily(static_cast<uint32_t>(-1)), g_Queue(VK_NULL_HANDLE),
-			g_Device(VK_NULL_HANDLE), g_DescriptorPool(VK_NULL_HANDLE),
-			g_MinImageCount(2), g_SwapChainRebuild(false), skipPresentFrame(false),
+	VulkanInstance::VulkanInstance(SystemWindow& window) :
+			g_Allocator(VK_NULL_HANDLE),
+			g_Instance(VK_NULL_HANDLE),
+			g_PhysicalDevice(VK_NULL_HANDLE),
+			g_QueueFamily(static_cast<uint32_t>(-1)),
+			g_Queue(VK_NULL_HANDLE),
+			g_Device(VK_NULL_HANDLE),
+			g_DescriptorPool(VK_NULL_HANDLE),
+			g_MinImageCount(2),
+			g_SwapChainRebuild(false),
+			skipPresentFrame(false),
 			g_PipelineCache(VK_NULL_HANDLE)
 	{
 		// Get Required Extrensions
@@ -110,7 +127,9 @@ namespace graphics
 			auto cdrc = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
 					g_Instance, "vkCreateDebugReportCallbackEXT");
 			if (cdrc == nullptr)
+			{
 				throw std::runtime_error("Can't find the vkCreateDebugReportCallbackEXT function");
+			}
 			callErrorHandler(cdrc(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport));
 #else
 			// Create Vulkan Instance without any debug feature
@@ -136,6 +155,7 @@ namespace graphics
 			// use first one available. This covers most common cases
 			// (multi-gpu/integrated+dedicated graphics). Handling more complicated
 			// setups (multiple dedicated GPUs) is out of scope of this sample.
+			// TODO Graphics Card Selector in Settings
 			g_PhysicalDevice = gpus.front();
 			for (auto& gpu : gpus)
 			{
@@ -165,7 +185,9 @@ namespace graphics
 			}
 
 			if (g_QueueFamily == static_cast<uint32_t>(-1))
+			{
 				throw std::runtime_error("Can't find correct queue family");
+			}
 		}
 
 		{ // Create Logical Device (with 1 queue)
@@ -190,26 +212,31 @@ namespace graphics
 		}
 
 		{ // Create Descriptor Pool
-			VkDescriptorPoolSize pool_sizes[] = {
-				{ VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-				{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-				{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+			const std::array pool_sizes {
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+				VkDescriptorPoolSize { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
 			};
+
 			VkDescriptorPoolCreateInfo pool_info = {
 				.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 				.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
-				.maxSets = 1000 * IM_ARRAYSIZE(pool_sizes),
-				.poolSizeCount = static_cast<uint32_t>(IM_ARRAYSIZE(pool_sizes)),
-				.pPoolSizes = pool_sizes
+				.maxSets = std::accumulate(
+					pool_sizes.cbegin(), pool_sizes.cend(), 0u,
+					[](const auto runningValue, const auto& item) constexpr {
+						return runningValue + item.descriptorCount;
+					}
+				),
+				.poolSizeCount = pool_sizes.size(),
+				.pPoolSizes = pool_sizes.data()
 			};
+
 			callErrorHandler(vkCreateDescriptorPool(g_Device, &pool_info,
 					g_Allocator, &g_DescriptorPool));
 		}
@@ -220,43 +247,53 @@ namespace graphics
 					window.glfwWindow, g_Allocator, &mainData.Surface));
 
 			// Check for WSI support
-			VkBool32 res;
+			VkBool32 result;
 			vkGetPhysicalDeviceSurfaceSupportKHR(g_PhysicalDevice, g_QueueFamily,
-					mainData.Surface, &res);
-			if (res != VK_TRUE)
+					mainData.Surface, &result);
+			if (result != VK_TRUE)
+			{
 				throw std::runtime_error("Error no WSI support on physical device 0");
+			}
 
 			// Select Surface Format
-			const VkFormat requestSurfaceImageFormat[] = {
+			const std::array requestSurfaceImageFormat {
 				VK_FORMAT_B8G8R8A8_UNORM,
 				VK_FORMAT_R8G8B8A8_UNORM,
 				VK_FORMAT_B8G8R8_UNORM,
 				VK_FORMAT_R8G8B8_UNORM
 			};
-			const VkColorSpaceKHR requestSurfaceColorSpace =
-					VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 			mainData.SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(
-					g_PhysicalDevice, mainData.Surface, requestSurfaceImageFormat,
-					static_cast<size_t>(IM_ARRAYSIZE(requestSurfaceImageFormat)),
-					requestSurfaceColorSpace);
+				g_PhysicalDevice,
+				mainData.Surface,
+				requestSurfaceImageFormat.data(),
+				requestSurfaceImageFormat.size(),
+				VK_COLORSPACE_SRGB_NONLINEAR_KHR
+			);
 
 			// Select Present Mode
 #ifdef IMGUI_UNLIMITED_FRAME_RATE
-			VkPresentModeKHR present_modes[] = {
-				VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_IMMEDIATE_KHR,
+			const std::array present_modes {
+				VK_PRESENT_MODE_MAILBOX_KHR,
+				VK_PRESENT_MODE_IMMEDIATE_KHR,
 				VK_PRESENT_MODE_FIFO_KHR
 			};
 #else
-			VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
+			const std::array present_modes {
+				VK_PRESENT_MODE_FIFO_KHR
+			};
 #endif
 			mainData.PresentMode = ImGui_ImplVulkanH_SelectPresentMode(
-					g_PhysicalDevice, mainData.Surface, &present_modes[0],
-					IM_ARRAYSIZE(present_modes));
-			//printf("[vulkan] Selected PresentMode = %d\n", mainData.PresentMode);
+				g_PhysicalDevice,
+				mainData.Surface,
+				present_modes.data(),
+				present_modes.size()
+			);
 
 			// Create SwapChain, RenderPass, Framebuffer, etc.
 			if (g_MinImageCount < 2)
+			{
 				throw std::runtime_error("Not enought swapchain images");
+			}
 
 			// Get FramebufferSize
 			int width;
@@ -290,15 +327,7 @@ namespace graphics
 		vkDestroyInstance(g_Instance, g_Allocator);
 	}
 
-	void VulkanInstance::setClearColor(float red, float green, float blue)
-	{
-		mainData.ClearValue.color.float32[0] = red;
-		mainData.ClearValue.color.float32[1] = green;
-		mainData.ClearValue.color.float32[2] = blue;
-		mainData.ClearValue.color.float32[3] = 1.0f;
-	}
-
-	void VulkanInstance::init(GlfwWindow& window)
+	void VulkanInstance::init(SystemWindow& window)
 	{
 		{ // Setup Platform/Renderer backends
 			ImGui_ImplGlfw_InitForVulkan(window.glfwWindow, true);
@@ -320,7 +349,7 @@ namespace graphics
 			ImGui_ImplVulkan_Init(&init_info, mainData.RenderPass);
 		}
 
-		{ // Load Fonts
+		{ // FIXME Load Fonts
 			// - If no fonts are loaded, dear imgui will use the default font.
 			//     You can also load multiple fonts and use
 			//     ImGui::PushFont()/PopFont() to select them.
@@ -376,10 +405,10 @@ namespace graphics
 		}
 	}
 
-	void VulkanInstance::rebuildSwapchain(GlfwWindow& window)
+	void VulkanInstance::rebuildSwapchain(SystemWindow& window)
 	{
-		// Resize swap chain?
-		if (!g_SwapChainRebuild) return;
+		// Resize swap chain check
+		if (!g_SwapChainRebuild) { return; }
 
 		int width;
 		int height;
@@ -397,9 +426,9 @@ namespace graphics
 
 	void VulkanInstance::render()
 	{
-		ImDrawData* draw_data = ImGui::GetDrawData();
+		ImDrawData* drawData = ImGui::GetDrawData();
 
-		if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
+		if (drawData->DisplaySize.x <= 0.0f || drawData->DisplaySize.y <= 0.0f)
 		{
 			skipPresentFrame = true;
 			return;
@@ -419,25 +448,27 @@ namespace graphics
 		}
 		callErrorHandler(err);
 
-		ImGui_ImplVulkanH_Frame* fd = &mainData.Frames[mainData.FrameIndex];
+		ImGui_ImplVulkanH_Frame* frameData = &mainData.Frames[mainData.FrameIndex];
 		{
 			// wait indefinitely instead of periodically checking
-			callErrorHandler(vkWaitForFences(g_Device, 1, &fd->Fence, VK_TRUE, UINT64_MAX));
-			callErrorHandler(vkResetFences(g_Device, 1, &fd->Fence));
+			callErrorHandler(vkWaitForFences(g_Device, 1, &frameData->Fence, VK_TRUE, UINT64_MAX));
+			callErrorHandler(vkResetFences(g_Device, 1, &frameData->Fence));
 		}
+
 		{
-			callErrorHandler(vkResetCommandPool(g_Device, fd->CommandPool, 0));
+			callErrorHandler(vkResetCommandPool(g_Device, frameData->CommandPool, 0));
 			VkCommandBufferBeginInfo info = {
 				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 				.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
 			};
-			callErrorHandler(vkBeginCommandBuffer(fd->CommandBuffer, &info));
+			callErrorHandler(vkBeginCommandBuffer(frameData->CommandBuffer, &info));
 		}
+
 		{
 			VkRenderPassBeginInfo info = {
 				.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 				.renderPass = mainData.RenderPass,
-				.framebuffer = fd->Framebuffer,
+				.framebuffer = frameData->Framebuffer,
 				.renderArea = {
 					.extent = {
 						.width = static_cast<uint32_t>(mainData.Width),
@@ -447,14 +478,15 @@ namespace graphics
 				.clearValueCount = 1,
 				.pClearValues = &mainData.ClearValue
 			};
-			vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+			vkCmdBeginRenderPass(frameData->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 		}
 
 		// Record dear imgui primitives into command buffer
-		ImGui_ImplVulkan_RenderDrawData(draw_data, fd->CommandBuffer);
+		ImGui_ImplVulkan_RenderDrawData(drawData, frameData->CommandBuffer);
 
 		// Submit command buffer
-		vkCmdEndRenderPass(fd->CommandBuffer);
+		vkCmdEndRenderPass(frameData->CommandBuffer);
+
 		{
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkSubmitInfo info = {
@@ -463,18 +495,18 @@ namespace graphics
 				.pWaitSemaphores = &image_acquired_semaphore,
 				.pWaitDstStageMask = &wait_stage,
 				.commandBufferCount = 1,
-				.pCommandBuffers = &fd->CommandBuffer,
+				.pCommandBuffers = &frameData->CommandBuffer,
 				.signalSemaphoreCount = 1,
 				.pSignalSemaphores = &render_complete_semaphore
 			};
-			callErrorHandler(vkEndCommandBuffer(fd->CommandBuffer));
-			callErrorHandler(vkQueueSubmit(g_Queue, 1, &info, fd->Fence));
+			callErrorHandler(vkEndCommandBuffer(frameData->CommandBuffer));
+			callErrorHandler(vkQueueSubmit(g_Queue, 1, &info, frameData->Fence));
 		}
 	}
 
 	void VulkanInstance::presentFrame()
 	{
-		if (skipPresentFrame || g_SwapChainRebuild) return;
+		if (skipPresentFrame || g_SwapChainRebuild) { return; }
 
 		VkSemaphore render_complete_semaphore =
 				mainData.FrameSemaphores[mainData.SemaphoreIndex].RenderCompleteSemaphore;

@@ -16,5 +16,4 @@ DOCDIR      := doc
 
 LIBIMGUI    := imgui
 LIBTEXTEDIT := ImGuiColorTextEdit
-BACKENDDIR  := backends
 LIBTINYXML  := tinyxml2
